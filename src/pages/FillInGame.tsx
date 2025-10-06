@@ -180,8 +180,8 @@ const FillInGame = () => {
       <div className="container mx-auto px-4 pt-24 pb-8">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start justify-center">
           {/* Picture frame */}
-          <div className="flex flex-col gap-4 flex-shrink-0 w-full lg:w-auto max-w-2xl">
-            <div className="relative w-full aspect-[4/3] bg-card rounded-3xl border-8 border-primary shadow-[0_0_0_8px_hsl(var(--primary)/0.15)] transition-all duration-300">
+          <div className="flex flex-col gap-4 flex-shrink-0 w-full lg:w-auto">
+            <div className="relative w-full lg:w-[600px] aspect-[4/3] bg-card rounded-3xl border-8 border-primary shadow-[0_0_0_8px_hsl(var(--primary)/0.15)] transition-all duration-300">
               {objects.map((obj) => (
                 <FillInObject
                   key={obj.id}
