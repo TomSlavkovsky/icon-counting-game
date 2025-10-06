@@ -2,8 +2,9 @@ import { useState, useCallback } from 'react';
 import { GameTask, ColorChoice } from '@/components/game/types';
 import { GameField } from '@/components/game/GameField';
 import { ColorSelector } from '@/components/game/ColorSelector';
-import { NextTaskButton } from '@/components/game/NextTaskButton';
 import { GameHeader } from '@/components/game/GameHeader';
+import { ScoreCounter } from '@/components/game/ScoreCounter';
+import { IconButton } from '@/components/game/IconButton';
 import { generateTask, checkAnswer, playSound } from '@/components/game/gameUtils';
 import { useSettings } from '@/contexts/SettingsContext';
 
@@ -74,43 +75,70 @@ const CompareGame = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 relative">
+      {/* Header with back and reset buttons */}
+      <GameHeader
+        score={score}
+        muted={!soundEnabled}
+        onToggleMute={() => {}}
+        onReset={handleNextTask}
+      />
+
+      {/* Score Counter - centered at top */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+        <ScoreCounter score={score} />
+      </div>
+
       <div className="w-full max-w-7xl">
-        {/* Header */}
-        <GameHeader
-          score={score}
-          muted={!soundEnabled}
-          onToggleMute={() => {}}
-          onReset={handleNextTask}
-        />
-
-        {/* Color Selector */}
-        <div className="flex justify-center mb-8 animate-slide-up">
-          <ColorSelector selected={selectedColor} onChange={setSelectedColor} />
-        </div>
-
         {/* Game Fields */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
           <GameField
             field={task.leftField}
             onObjectClick={(objectId) => handleObjectClick('left', objectId)}
-            onAnswerClick={(answer) => handleAnswerClick('left', answer)}
             selectedColor={selectedColor}
             showFeedback={feedback?.field === 'left' ? feedback.type : undefined}
           />
+          
+          {/* Central Answer Controls */}
+          <div className="hidden lg:flex flex-col items-center justify-center gap-6 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
+            <IconButton
+              type="more"
+              onClick={() => handleAnswerClick('left', 'more')}
+              aria-label="Left field has more"
+            />
+            <IconButton
+              type="fewer"
+              onClick={() => handleAnswerClick('left', 'fewer')}
+              aria-label="Left field has fewer"
+            />
+          </div>
+
           <GameField
             field={task.rightField}
             onObjectClick={(objectId) => handleObjectClick('right', objectId)}
-            onAnswerClick={(answer) => handleAnswerClick('right', answer)}
             selectedColor={selectedColor}
             showFeedback={feedback?.field === 'right' ? feedback.type : undefined}
           />
         </div>
 
-        {/* Next Task Button */}
-        <div className="flex justify-center">
-          <NextTaskButton onClick={handleNextTask} />
+        {/* Mobile Answer Controls */}
+        <div className="lg:hidden flex justify-center gap-6 mt-8">
+          <IconButton
+            type="more"
+            onClick={() => handleAnswerClick('left', 'more')}
+            aria-label="More"
+          />
+          <IconButton
+            type="fewer"
+            onClick={() => handleAnswerClick('left', 'fewer')}
+            aria-label="Fewer"
+          />
         </div>
+      </div>
+
+      {/* Color Selector - bottom right */}
+      <div className="fixed bottom-8 right-8 z-10 animate-slide-up">
+        <ColorSelector selected={selectedColor} onChange={setSelectedColor} />
       </div>
     </div>
   );

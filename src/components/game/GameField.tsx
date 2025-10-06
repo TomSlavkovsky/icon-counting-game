@@ -1,11 +1,9 @@
 import { GameField as GameFieldType, ColorChoice } from './types';
 import { ColorableObject } from './ColorableObject';
-import { IconButton } from './IconButton';
 
 interface GameFieldProps {
   field: GameFieldType;
   onObjectClick: (objectId: string) => void;
-  onAnswerClick: (answer: 'more' | 'fewer') => void;
   selectedColor: ColorChoice;
   showFeedback?: 'correct' | 'incorrect';
 }
@@ -13,7 +11,6 @@ interface GameFieldProps {
 export const GameField = ({ 
   field, 
   onObjectClick, 
-  onAnswerClick,
   showFeedback 
 }: GameFieldProps) => {
   const frameColorClass = field.frameColor === 'blue' 
@@ -27,35 +24,20 @@ export const GameField = ({
     : '';
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div 
-        className={`relative w-full aspect-[4/3] bg-card rounded-3xl border-8 ${frameColorClass} ${feedbackClass} transition-all duration-300`}
-      >
-        {field.objects.map((obj) => (
-          <ColorableObject
-            key={obj.id}
-            type={obj.type}
-            colored={obj.colored}
-            color={obj.color}
-            onClick={() => onObjectClick(obj.id)}
-            x={obj.x}
-            y={obj.y}
-          />
-        ))}
-      </div>
-      
-      <div className="flex gap-4">
-        <IconButton
-          type="more"
-          onClick={() => onAnswerClick('more')}
-          aria-label="This field has more"
+    <div 
+      className={`relative w-full aspect-[4/3] bg-card rounded-3xl border-8 ${frameColorClass} ${feedbackClass} transition-all duration-300`}
+    >
+      {field.objects.map((obj) => (
+        <ColorableObject
+          key={obj.id}
+          type={obj.type}
+          colored={obj.colored}
+          color={obj.color}
+          onClick={() => onObjectClick(obj.id)}
+          x={obj.x}
+          y={obj.y}
         />
-        <IconButton
-          type="fewer"
-          onClick={() => onAnswerClick('fewer')}
-          aria-label="This field has fewer"
-        />
-      </div>
+      ))}
     </div>
   );
 };
