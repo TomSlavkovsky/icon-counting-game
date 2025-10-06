@@ -2,16 +2,16 @@ import { useState, useCallback } from 'react';
 import { GameTask, ColorChoice } from '@/components/game/types';
 import { GameField } from '@/components/game/GameField';
 import { ColorSelector } from '@/components/game/ColorSelector';
-import { ScoreCounter } from '@/components/game/ScoreCounter';
 import { NextTaskButton } from '@/components/game/NextTaskButton';
-import { SoundToggle } from '@/components/game/SoundToggle';
+import { GameHeader } from '@/components/game/GameHeader';
 import { generateTask, checkAnswer, playSound } from '@/components/game/gameUtils';
+import { useSettings } from '@/contexts/SettingsContext';
 
-const Index = () => {
+const CompareGame = () => {
+  const { soundEnabled } = useSettings();
   const [task, setTask] = useState<GameTask>(() => generateTask());
   const [selectedColor, setSelectedColor] = useState<ColorChoice>('blue');
   const [score, setScore] = useState(0);
-  const [muted, setMuted] = useState(false);
   const [feedback, setFeedback] = useState<{ field: 'left' | 'right'; type: 'correct' | 'incorrect' } | null>(null);
 
   const handleObjectClick = useCallback(
@@ -47,7 +47,7 @@ const Index = () => {
 
       if (isCorrect) {
         setScore((prev) => prev + 1);
-        playSound('correct', muted);
+        playSound('correct', !soundEnabled);
         setFeedback({ field: fieldId, type: 'correct' });
         
         // Auto-advance to next task after celebration
@@ -56,7 +56,7 @@ const Index = () => {
           setTask(generateTask());
         }, 1500);
       } else {
-        playSound('incorrect', muted);
+        playSound('incorrect', !soundEnabled);
         setFeedback({ field: fieldId, type: 'incorrect' });
         
         // Clear feedback after animation
@@ -65,7 +65,7 @@ const Index = () => {
         }, 1000);
       }
     },
-    [task, muted]
+    [task, soundEnabled]
   );
 
   const handleNextTask = useCallback(() => {
@@ -77,10 +77,12 @@ const Index = () => {
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-8">
       <div className="w-full max-w-7xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <ScoreCounter score={score} />
-          <SoundToggle muted={muted} onToggle={() => setMuted(!muted)} />
-        </div>
+        <GameHeader
+          score={score}
+          muted={!soundEnabled}
+          onToggleMute={() => {}}
+          onReset={handleNextTask}
+        />
 
         {/* Color Selector */}
         <div className="flex justify-center mb-8 animate-slide-up">
@@ -114,4 +116,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default CompareGame;
