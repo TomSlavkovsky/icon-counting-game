@@ -24,35 +24,19 @@ const getRandomPartition = (total: number, parts: number): number[] => {
   if (parts === 1) return [total];
   
   let remaining = total;
-  
-  // Decide if we'll have a zero (5% chance, max one zero)
-  const hasZero = Math.random() < 0.05;
-  const zeroIndex = hasZero ? Math.floor(Math.random() * parts) : -1;
-
   const partition = [] as number[];
   
   for (let i = 0; i < parts - 1; i++) {
-    if (i === zeroIndex) {
-      partition.push(0 as number);
-      continue;
-    }
+    // Ensure at least 1 for each part to minimize zeros
+    const minValue = 1;
     const max = remaining - (parts - i - 1);
-    const value = Math.floor(Math.random() * (max + 1));
+    const value = Math.max(minValue, Math.floor(Math.random() * (max + 1)));
     partition.push(value as number);
     remaining -= value;
   }
   
-  // Last part gets remainder (unless it's the zero)
-  if (parts - 1 === zeroIndex) {
-    partition.push(0 as number);
-  } else {
-    partition.push(remaining as number);
-  }
-
-  // Ensure at least one non-zero count - rebuild array if all zeros
-  if (partition.every(v => v === 0)) {
-    return [total, ...Array(parts - 1).fill(0)];
-  }
+  // Last part gets remainder (ensure at least 1)
+  partition.push(Math.max(1, remaining) as number);
 
   // Shuffle to make it random
   for (let i = partition.length - 1; i > 0; i--) {

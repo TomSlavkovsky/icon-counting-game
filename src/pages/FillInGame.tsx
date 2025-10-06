@@ -46,22 +46,18 @@ const FillInGame = () => {
   }, [soundEnabled]);
 
   const handleObjectClick = (objectId: string) => {
-    setObjects((prev) =>
-      prev.map((obj) =>
+    setObjects((prev) => {
+      const updatedObjects = prev.map((obj) =>
         obj.id === objectId
           ? { ...obj, color: obj.color === selectedColor ? null : selectedColor }
           : obj
-      )
-    );
-    
-    // Auto-update tally count
-    const updatedObjects = objects.map((obj) =>
-      obj.id === objectId
-        ? { ...obj, color: obj.color === selectedColor ? null : selectedColor }
-        : obj
-    );
-    
-    updateTalliesFromObjects(updatedObjects);
+      );
+      
+      // Auto-update tally count only for NON-prefilled boxes
+      updateTalliesFromObjects(updatedObjects);
+      
+      return updatedObjects;
+    });
   };
 
   const updateTalliesFromObjects = (currentObjects: FillInObjectType[]) => {
@@ -80,9 +76,11 @@ const FillInGame = () => {
     });
 
     setTallyBoxes((prev) =>
-      prev.map((box) =>
-        box.prefilled ? box : { ...box, currentTally: colorCounts[box.color] }
-      )
+      prev.map((box) => {
+        // NEVER update prefilled boxes
+        if (box.prefilled) return box;
+        return { ...box, currentTally: colorCounts[box.color] };
+      })
     );
   };
 
@@ -169,6 +167,16 @@ const FillInGame = () => {
         <ScoreCounter score={score} />
       </div>
 
+      {/* Next button - top right */}
+      <div className="absolute top-4 right-4 z-10">
+        <Button
+          onClick={handleNext}
+          className="flex items-center justify-center w-16 h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-playful"
+        >
+          <SkipForward size={32} strokeWidth={3} />
+        </Button>
+      </div>
+
       <div className="container mx-auto px-4 pt-24 pb-8">
         <div className="grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
           {/* Picture frame */}
@@ -186,7 +194,7 @@ const FillInGame = () => {
               ))}
             </div>
 
-            {/* Action buttons */}
+            {/* Check button */}
             <div className="flex gap-4 justify-center">
               <Button
                 onClick={handleCheck}
@@ -194,17 +202,11 @@ const FillInGame = () => {
               >
                 <Check size={48} strokeWidth={3} />
               </Button>
-              <Button
-                onClick={handleNext}
-                className="flex items-center justify-center w-20 h-20 bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-playful"
-              >
-                <SkipForward size={48} strokeWidth={3} />
-              </Button>
             </div>
           </div>
 
-          {/* Tally boxes - responsive grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-1 gap-3">
+          {/* Tally boxes - responsive grid, smaller on desktop */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-1 gap-3 xl:scale-[0.67] xl:origin-top">
             {tallyBoxes.map((box) => (
               <TallyBox
                 key={box.color}
