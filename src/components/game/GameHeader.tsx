@@ -15,8 +15,11 @@ export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderPr
   return (
     <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
       <Link to="/">
-        <Button variant="ghost" size="icon" className="h-14 w-14" aria-label="Back to hub">
-          <ArrowLeft size={28} />
+        <Button 
+          className="h-12 px-4 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center gap-2" 
+          aria-label="Back to hub"
+        >
+          <ArrowLeft size={24} className="text-foreground" />
         </Button>
       </Link>
       

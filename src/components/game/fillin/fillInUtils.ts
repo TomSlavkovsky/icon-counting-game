@@ -23,21 +23,43 @@ const generatePositions = (count: number): Array<{ x: number; y: number }> => {
 const getRandomPartition = (total: number, parts: number): number[] => {
   if (parts === 1) return [total];
   
-  const partition: number[] = new Array(parts).fill(0);
   let remaining = total;
+  
+  // Decide if we'll have a zero (20% chance, max one zero)
+  const hasZero = Math.random() < 0.2;
+  const zeroIndex = hasZero ? Math.floor(Math.random() * parts) : -1;
 
+  const partition = [] as number[];
+  
   for (let i = 0; i < parts - 1; i++) {
+    if (i === zeroIndex) {
+      partition.push(0 as number);
+      continue;
+    }
     const max = remaining - (parts - i - 1);
     const value = Math.floor(Math.random() * (max + 1));
-    partition[i] = value;
+    partition.push(value as number);
     remaining -= value;
   }
-  partition[parts - 1] = remaining;
+  
+  // Last part gets remainder (unless it's the zero)
+  if (parts - 1 === zeroIndex) {
+    partition.push(0 as number);
+  } else {
+    partition.push(remaining as number);
+  }
+
+  // Ensure at least one non-zero count - rebuild array if all zeros
+  if (partition.every(v => v === 0)) {
+    return [total, ...Array(parts - 1).fill(0)];
+  }
 
   // Shuffle to make it random
   for (let i = partition.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [partition[i], partition[j]] = [partition[j], partition[i]];
+    const temp = partition[i];
+    partition[i] = partition[j];
+    partition[j] = temp;
   }
 
   return partition;

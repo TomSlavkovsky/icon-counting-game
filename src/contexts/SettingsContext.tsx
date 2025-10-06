@@ -13,6 +13,8 @@ interface SettingsContextType {
   setSoundEnabled: (value: boolean) => void;
   teacherMode: boolean;
   setTeacherMode: (value: boolean) => void;
+  paletteSize: number;
+  setPaletteSize: (value: number) => void;
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined);
@@ -31,6 +33,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [showSameTasks, setShowSameTasks] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [teacherMode, setTeacherMode] = useState(false);
+  const [paletteSize, setPaletteSize] = useState(2);
 
   return (
     <SettingsContext.Provider
@@ -45,6 +48,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         setSoundEnabled,
         teacherMode,
         setTeacherMode,
+        paletteSize,
+        setPaletteSize,
       }}
     >
       {children}

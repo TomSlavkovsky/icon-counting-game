@@ -11,7 +11,7 @@ import { Check, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const FillInGame = () => {
-  const { maxNumber, soundEnabled } = useSettings();
+  const { maxNumber, soundEnabled, paletteSize } = useSettings();
   const [score, setScore] = useState(0);
   const [muted, setMuted] = useState(!soundEnabled);
   const [selectedColor, setSelectedColor] = useState<FillInColor>('blue');
@@ -20,10 +20,10 @@ const FillInGame = () => {
   const [tallyBoxes, setTallyBoxes] = useState<typeof task.tallyBoxes>([]);
   const [showFeedback, setShowFeedback] = useState<'correct' | 'incorrect' | null>(null);
   const [mismatchedColors, setMismatchedColors] = useState<Set<string>>(new Set());
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
-  const paletteSize = 2; // TODO: Make this configurable in settings
-  const includeUncolored = false; // TODO: Make this configurable in settings
-  const objectType = 'star'; // TODO: Make this random or configurable
+  const includeUncolored = false;
+  const objectType = 'star';
 
   const allColors: FillInColor[] = ['blue', 'red', 'yellow', 'green', 'purple'];
   const colors = allColors.slice(0, paletteSize);
@@ -53,36 +53,43 @@ const FillInGame = () => {
           : obj
       )
     );
+    
+    // Auto-update tally count
+    const updatedObjects = objects.map((obj) =>
+      obj.id === objectId
+        ? { ...obj, color: obj.color === selectedColor ? null : selectedColor }
+        : obj
+    );
+    
+    updateTalliesFromObjects(updatedObjects);
   };
 
-  const handleAddTally = (colorKey: FillInColor | 'uncolored') => {
+  const updateTalliesFromObjects = (currentObjects: FillInObjectType[]) => {
+    const colorCounts: Record<string, number> = {
+      blue: 0,
+      red: 0,
+      yellow: 0,
+      green: 0,
+      purple: 0,
+      uncolored: 0,
+    };
+
+    currentObjects.forEach((obj) => {
+      const colorKey = obj.color || 'uncolored';
+      colorCounts[colorKey]++;
+    });
+
     setTallyBoxes((prev) =>
       prev.map((box) =>
-        box.color === colorKey && !box.prefilled
-          ? { ...box, currentTally: box.currentTally + 1 }
-          : box
+        box.prefilled ? box : { ...box, currentTally: colorCounts[box.color] }
       )
     );
   };
 
-  const handleUndoTally = (colorKey: FillInColor | 'uncolored') => {
-    setTallyBoxes((prev) =>
-      prev.map((box) =>
-        box.color === colorKey && !box.prefilled && box.currentTally > 0
-          ? { ...box, currentTally: box.currentTally - 1 }
-          : box
-      )
-    );
-  };
-
-  const handleClearTally = (colorKey: FillInColor | 'uncolored') => {
-    setTallyBoxes((prev) =>
-      prev.map((box) =>
-        box.color === colorKey && !box.prefilled
-          ? { ...box, currentTally: 0 }
-          : box
-      )
-    );
+  const handleTallyBoxClick = (color: FillInColor | 'uncolored') => {
+    if (color !== 'uncolored') {
+      setSelectedColor(color as FillInColor);
+    }
   };
 
   const handleCheck = () => {
@@ -95,7 +102,9 @@ const FillInGame = () => {
       setShowFeedback('correct');
       playSound('correct', muted);
       setScore((prev) => prev + 1);
+      setShowSuccessAnimation(true);
       setTimeout(() => {
+        setShowSuccessAnimation(false);
         initializeTask();
       }, 1500);
     } else {
@@ -197,31 +206,28 @@ const FillInGame = () => {
           </div>
 
           {/* Tally boxes */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             {tallyBoxes.map((box) => (
               <TallyBox
                 key={box.color}
                 color={box.color}
                 currentTally={box.currentTally}
                 prefilled={box.prefilled}
-                onAdd={() => handleAddTally(box.color)}
-                onUndo={() => handleUndoTally(box.color)}
-                onClear={() => handleClearTally(box.color)}
                 showMismatch={mismatchedColors.has(box.color)}
+                isActive={box.color === selectedColor}
+                onClick={() => handleTallyBoxClick(box.color)}
               />
             ))}
           </div>
         </div>
       </div>
 
-      {/* Color palette - bottom right */}
-      <div className="fixed bottom-8 right-8 z-10">
-        <ColorPalette
-          colors={colors}
-          selectedColor={selectedColor}
-          onColorSelect={setSelectedColor}
-        />
-      </div>
+      {/* Success animation */}
+      {showSuccessAnimation && (
+        <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-50">
+          <div className="animate-trumpet-fly text-6xl">🎺</div>
+        </div>
+      )}
     </div>
   );
 };

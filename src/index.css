@@ -70,6 +70,21 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  @keyframes trumpet-fly {
+    0% {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(-200px) scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  .animate-trumpet-fly {
+    animation: trumpet-fly 500ms ease-out forwards;
+  }
 }
 
 @layer base {

@@ -39,6 +39,8 @@ export const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
     setSoundEnabled,
     teacherMode,
     setTeacherMode,
+    paletteSize,
+    setPaletteSize,
   } = useSettings();
 
   const toggleObjectSet = (setId: ObjectSet) => {
@@ -82,6 +84,28 @@ export const SettingsDialog = ({ open, onOpenChange }: SettingsDialogProps) => {
             />
             <p className="text-sm text-muted-foreground">
               Sets the maximum count of objects in each game field
+            </p>
+          </div>
+
+          {/* Palette Size */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label htmlFor="palette-size" className="text-lg font-semibold">
+                Palette Size
+              </Label>
+              <span className="text-2xl font-bold text-primary">{paletteSize}</span>
+            </div>
+            <Slider
+              id="palette-size"
+              min={2}
+              max={5}
+              step={1}
+              value={[paletteSize]}
+              onValueChange={(value) => setPaletteSize(value[0])}
+              className="w-full"
+            />
+            <p className="text-sm text-muted-foreground">
+              Number of colors in Fill In game (2-5 colors)
             </p>
           </div>
 
