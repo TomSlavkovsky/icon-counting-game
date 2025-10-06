@@ -10,12 +10,12 @@ interface TallyBoxProps {
 }
 
 const COLOR_MAP = {
-  blue: 'bg-game-blue border-game-blue',
-  red: 'bg-game-red border-game-red',
-  yellow: 'bg-game-yellow border-game-yellow',
-  green: 'bg-green-500 border-green-500',
-  purple: 'bg-purple-500 border-purple-500',
-  uncolored: 'bg-muted border-muted-foreground',
+  blue: { bg: 'bg-game-blue', border: 'border-game-blue', active: 'border-game-blue' },
+  red: { bg: 'bg-game-red', border: 'border-game-red', active: 'border-game-red' },
+  yellow: { bg: 'bg-game-yellow', border: 'border-game-yellow', active: 'border-game-yellow' },
+  green: { bg: 'bg-green-500', border: 'border-green-500', active: 'border-green-500' },
+  purple: { bg: 'bg-purple-500', border: 'border-purple-500', active: 'border-purple-500' },
+  uncolored: { bg: 'bg-muted', border: 'border-muted-foreground', active: 'border-muted-foreground' },
 };
 
 const renderTallyMarks = (count: number) => {
@@ -30,22 +30,23 @@ const renderTallyMarks = (count: number) => {
   // Render groups of 5 (crossed) using SVG for proper rendering
   for (let i = 0; i < groups; i++) {
     marks.push(
-      <svg key={`group-${i}`} width="32" height="32" viewBox="0 0 32 32" className="inline-block mx-1">
-        <line x1="4" y1="8" x2="4" y2="24" stroke="currentColor" strokeWidth="2" />
-        <line x1="9" y1="8" x2="9" y2="24" stroke="currentColor" strokeWidth="2" />
-        <line x1="14" y1="8" x2="14" y2="24" stroke="currentColor" strokeWidth="2" />
-        <line x1="19" y1="8" x2="19" y2="24" stroke="currentColor" strokeWidth="2" />
-        <line x1="2" y1="18" x2="26" y2="10" stroke="currentColor" strokeWidth="2" />
+      <svg key={`group-${i}`} width="42" height="36" viewBox="0 0 42 36" className="inline-block mx-1">
+        <line x1="5" y1="8" x2="5" y2="28" stroke="currentColor" strokeWidth="3" />
+        <line x1="12" y1="8" x2="12" y2="28" stroke="currentColor" strokeWidth="3" />
+        <line x1="19" y1="8" x2="19" y2="28" stroke="currentColor" strokeWidth="3" />
+        <line x1="26" y1="8" x2="26" y2="28" stroke="currentColor" strokeWidth="3" />
+        <line x1="33" y1="8" x2="33" y2="28" stroke="currentColor" strokeWidth="3" />
+        <line x1="2" y1="20" x2="36" y2="12" stroke="currentColor" strokeWidth="3" />
       </svg>
     );
   }
 
-  // Render remainder - use SVG for consistent spacing
+  // Render remainder - use SVG for consistent spacing (7px between marks)
   if (remainder > 0) {
     marks.push(
-      <svg key="remainder" width={remainder * 6 + 4} height="32" viewBox={`0 0 ${remainder * 6 + 4} 32`} className="inline-block mx-1">
+      <svg key="remainder" width={remainder * 7 + 6} height="36" viewBox={`0 0 ${remainder * 7 + 6} 36`} className="inline-block mx-1">
         {Array.from({ length: remainder }).map((_, i) => (
-          <line key={i} x1={4 + i * 6} y1="8" x2={4 + i * 6} y2="24" stroke="currentColor" strokeWidth="2" />
+          <line key={i} x1={6 + i * 7} y1="8" x2={6 + i * 7} y2="28" stroke="currentColor" strokeWidth="3" />
         ))}
       </svg>
     );
@@ -62,11 +63,11 @@ export const TallyBox = ({
   isActive,
   onClick,
 }: TallyBoxProps) => {
-  const colorClass = COLOR_MAP[color];
+  const colorClasses = COLOR_MAP[color];
   const borderClass = showMismatch 
     ? 'border-4 border-red-500 animate-wiggle' 
     : isActive 
-    ? 'border-4 border-foreground' 
+    ? `border-4 ${colorClasses.active}` 
     : 'border-2 border-border';
 
   return (
@@ -77,7 +78,7 @@ export const TallyBox = ({
       aria-pressed={isActive}
     >
       {/* Color indicator - smaller */}
-      <div className={`w-10 h-10 rounded-full ${colorClass} border-4`} />
+      <div className={`w-5 h-5 rounded-full ${colorClasses.bg} ${colorClasses.border} border-2`} />
       
       {/* Tally display - smaller */}
       <div className="min-h-[48px] flex items-center justify-center px-3 py-1 bg-background rounded-xl min-w-[100px]">

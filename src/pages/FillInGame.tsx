@@ -106,7 +106,7 @@ const FillInGame = () => {
       setTimeout(() => {
         setShowSuccessAnimation(false);
         initializeTask();
-      }, 1500);
+      }, 800);
     } else {
       setShowFeedback('incorrect');
       playSound('incorrect', muted);
@@ -190,23 +190,21 @@ const FillInGame = () => {
             <div className="flex gap-4 justify-center">
               <Button
                 onClick={handleCheck}
-                className="flex items-center gap-2 px-8 py-6 text-lg bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-playful"
+                className="flex items-center justify-center w-20 h-20 bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-playful"
               >
-                <Check size={28} />
-                Check
+                <Check size={48} strokeWidth={3} />
               </Button>
               <Button
                 onClick={handleNext}
-                className="flex items-center gap-2 px-8 py-6 text-lg bg-primary hover:bg-primary/90 rounded-2xl shadow-playful"
+                className="flex items-center justify-center w-20 h-20 bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-playful"
               >
-                <SkipForward size={28} />
-                Next
+                <SkipForward size={48} strokeWidth={3} />
               </Button>
             </div>
           </div>
 
-          {/* Tally boxes */}
-          <div className="flex flex-col gap-3">
+          {/* Tally boxes - responsive grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-1 gap-3">
             {tallyBoxes.map((box) => (
               <TallyBox
                 key={box.color}

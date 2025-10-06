@@ -25,8 +25,8 @@ const getRandomPartition = (total: number, parts: number): number[] => {
   
   let remaining = total;
   
-  // Decide if we'll have a zero (20% chance, max one zero)
-  const hasZero = Math.random() < 0.2;
+  // Decide if we'll have a zero (5% chance, max one zero)
+  const hasZero = Math.random() < 0.05;
   const zeroIndex = hasZero ? Math.floor(Math.random() * parts) : -1;
 
   const partition = [] as number[];

@@ -73,17 +73,21 @@ All colors MUST be HSL.
 
   @keyframes trumpet-fly {
     0% {
-      transform: translateY(0) scale(1);
+      transform: translateY(0) scale(1) rotate(0deg);
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(-100px) scale(2) rotate(10deg);
       opacity: 1;
     }
     100% {
-      transform: translateY(-200px) scale(1.2);
+      transform: translateY(-150px) scale(2.5) rotate(15deg);
       opacity: 0;
     }
   }
 
   .animate-trumpet-fly {
-    animation: trumpet-fly 500ms ease-out forwards;
+    animation: trumpet-fly 800ms ease-out forwards;
   }
 }
 
