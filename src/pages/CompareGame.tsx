@@ -74,7 +74,7 @@ const CompareGame = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 md:p-8 relative">
+    <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 md:p-8 relative overflow-auto">
       {/* Header with back and reset buttons */}
       <GameHeader
         score={score}
@@ -88,9 +88,9 @@ const CompareGame = () => {
         <ScoreCounter score={score} />
       </div>
 
-      <div className="w-full max-w-7xl">
+      <div className="w-full max-w-7xl pt-16 sm:pt-0">
         {/* Game Fields */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 items-start">
           <GameField
             field={task.leftField}
             onObjectClick={(objectId) => handleObjectClick('left', objectId)}
@@ -110,7 +110,7 @@ const CompareGame = () => {
       </div>
 
       {/* Color Selector - bottom right */}
-      <div className="fixed bottom-8 right-8 z-10 animate-slide-up">
+      <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-10 animate-slide-up">
         <ColorSelector selected={selectedColor} onChange={setSelectedColor} />
       </div>
     </div>
