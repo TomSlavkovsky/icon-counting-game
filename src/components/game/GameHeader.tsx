@@ -27,7 +27,7 @@ export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderPr
             variant="ghost"
             size="icon"
             onClick={onReset}
-            className="h-14 w-14 bg-primary hover:bg-primary/90 text-primary-foreground rounded-full shadow-playful"
+            className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful"
             aria-label="Reset game"
           >
             <RotateCcw size={24} />

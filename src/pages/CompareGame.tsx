@@ -4,7 +4,6 @@ import { GameField } from '@/components/game/GameField';
 import { ColorSelector } from '@/components/game/ColorSelector';
 import { GameHeader } from '@/components/game/GameHeader';
 import { ScoreCounter } from '@/components/game/ScoreCounter';
-import { IconButton } from '@/components/game/IconButton';
 import { generateTask, checkAnswer, playSound } from '@/components/game/gameUtils';
 import { useSettings } from '@/contexts/SettingsContext';
 
@@ -91,47 +90,21 @@ const CompareGame = () => {
 
       <div className="w-full max-w-7xl">
         {/* Game Fields */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
           <GameField
             field={task.leftField}
             onObjectClick={(objectId) => handleObjectClick('left', objectId)}
+            onAnswerClick={(answer) => handleAnswerClick('left', answer)}
             selectedColor={selectedColor}
             showFeedback={feedback?.field === 'left' ? feedback.type : undefined}
           />
-          
-          {/* Central Answer Controls */}
-          <div className="hidden lg:flex flex-col items-center justify-center gap-6 absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20">
-            <IconButton
-              type="more"
-              onClick={() => handleAnswerClick('left', 'more')}
-              aria-label="Left field has more"
-            />
-            <IconButton
-              type="fewer"
-              onClick={() => handleAnswerClick('left', 'fewer')}
-              aria-label="Left field has fewer"
-            />
-          </div>
 
           <GameField
             field={task.rightField}
             onObjectClick={(objectId) => handleObjectClick('right', objectId)}
+            onAnswerClick={(answer) => handleAnswerClick('right', answer)}
             selectedColor={selectedColor}
             showFeedback={feedback?.field === 'right' ? feedback.type : undefined}
-          />
-        </div>
-
-        {/* Mobile Answer Controls */}
-        <div className="lg:hidden flex justify-center gap-6 mt-8">
-          <IconButton
-            type="more"
-            onClick={() => handleAnswerClick('left', 'more')}
-            aria-label="More"
-          />
-          <IconButton
-            type="fewer"
-            onClick={() => handleAnswerClick('left', 'fewer')}
-            aria-label="Fewer"
           />
         </div>
       </div>
