@@ -178,9 +178,9 @@ const FillInGame = () => {
       </div>
 
       <div className="container mx-auto px-4 pt-24 pb-8">
-        <div className="grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
+        <div className="flex gap-8 items-start justify-center">
           {/* Picture frame */}
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 flex-shrink-0">
             <div className="relative w-full aspect-[4/3] bg-card rounded-3xl border-8 border-primary shadow-[0_0_0_8px_hsl(var(--primary)/0.15)] transition-all duration-300">
               {objects.map((obj) => (
                 <FillInObject
@@ -205,8 +205,8 @@ const FillInGame = () => {
             </div>
           </div>
 
-          {/* Tally boxes - responsive grid, smaller on desktop */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-1 gap-3 xl:scale-[0.67] xl:origin-top">
+          {/* Tally boxes - vertical stack next to board */}
+          <div className="flex flex-col gap-3 flex-shrink-0">
             {tallyBoxes.map((box) => (
               <TallyBox
                 key={box.color}

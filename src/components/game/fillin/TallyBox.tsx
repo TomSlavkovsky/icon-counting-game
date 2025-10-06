@@ -73,15 +73,15 @@ export const TallyBox = ({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center gap-2 p-3 bg-card rounded-2xl shadow-soft ${borderClass} transition-all cursor-pointer hover:scale-105 active:scale-95`}
+      className={`flex flex-col items-center gap-2 p-4 bg-card rounded-2xl shadow-soft ${borderClass} transition-all cursor-pointer hover:scale-105 active:scale-95`}
       aria-label={`Select ${color} color`}
       aria-pressed={isActive}
     >
-      {/* Color indicator - smaller */}
-      <div className={`w-5 h-5 rounded-full ${colorClasses.bg} ${colorClasses.border} border-2`} />
+      {/* Color indicator - smaller width */}
+      <div className={`w-5 h-10 rounded-full ${colorClasses.bg} ${colorClasses.border} border-2`} />
       
-      {/* Tally display - smaller */}
-      <div className="min-h-[48px] flex items-center justify-center px-3 py-1 bg-background rounded-xl min-w-[100px]">
+      {/* Tally display - restored height */}
+      <div className="min-h-[60px] flex items-center justify-center px-3 py-2 bg-background rounded-xl min-w-[100px]">
         {renderTallyMarks(currentTally)}
       </div>
     </button>

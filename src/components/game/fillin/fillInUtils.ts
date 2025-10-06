@@ -26,17 +26,30 @@ const getRandomPartition = (total: number, parts: number): number[] => {
   let remaining = total;
   const partition = [] as number[];
   
+  // Allow occasional zero (5% chance per color, max one zero total)
+  const hasZero = Math.random() < 0.05 && parts > 1;
+  const zeroIndex = hasZero ? Math.floor(Math.random() * parts) : -1;
+  
   for (let i = 0; i < parts - 1; i++) {
-    // Ensure at least 1 for each part to minimize zeros
-    const minValue = 1;
-    const max = remaining - (parts - i - 1);
-    const value = Math.max(minValue, Math.floor(Math.random() * (max + 1)));
+    if (i === zeroIndex) {
+      partition.push(0 as number);
+      continue;
+    }
+    
+    const remainingParts = parts - i - 1;
+    const minForRest = Math.max(0, remainingParts - (zeroIndex > i ? 1 : 0));
+    const max = remaining - minForRest;
+    const value = Math.floor(Math.random() * (max + 1));
     partition.push(value as number);
     remaining -= value;
   }
   
-  // Last part gets remainder (ensure at least 1)
-  partition.push(Math.max(1, remaining) as number);
+  // Last part gets remainder
+  if (parts - 1 === zeroIndex) {
+    partition.push(0 as number);
+  } else {
+    partition.push(remaining as number);
+  }
 
   // Shuffle to make it random
   for (let i = partition.length - 1; i > 0; i--) {
