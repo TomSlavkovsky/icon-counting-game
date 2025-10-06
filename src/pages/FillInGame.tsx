@@ -1,0 +1,229 @@
+import { useState, useEffect } from 'react';
+import { useSettings } from '@/contexts/SettingsContext';
+import { GameHeader } from '@/components/game/GameHeader';
+import { ScoreCounter } from '@/components/game/ScoreCounter';
+import { ColorPalette } from '@/components/game/fillin/ColorPalette';
+import { TallyBox } from '@/components/game/fillin/TallyBox';
+import { FillInObject } from '@/components/game/fillin/FillInObject';
+import { FillInTask, FillInColor, FillInObject as FillInObjectType } from '@/components/game/fillin/types';
+import { generateTask, checkAnswer, playSound } from '@/components/game/fillin/fillInUtils';
+import { Check, SkipForward } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+
+const FillInGame = () => {
+  const { maxNumber, soundEnabled } = useSettings();
+  const [score, setScore] = useState(0);
+  const [muted, setMuted] = useState(!soundEnabled);
+  const [selectedColor, setSelectedColor] = useState<FillInColor>('blue');
+  const [task, setTask] = useState<FillInTask | null>(null);
+  const [objects, setObjects] = useState<FillInObjectType[]>([]);
+  const [tallyBoxes, setTallyBoxes] = useState<typeof task.tallyBoxes>([]);
+  const [showFeedback, setShowFeedback] = useState<'correct' | 'incorrect' | null>(null);
+  const [mismatchedColors, setMismatchedColors] = useState<Set<string>>(new Set());
+
+  const paletteSize = 2; // TODO: Make this configurable in settings
+  const includeUncolored = false; // TODO: Make this configurable in settings
+  const objectType = 'star'; // TODO: Make this random or configurable
+
+  const allColors: FillInColor[] = ['blue', 'red', 'yellow', 'green', 'purple'];
+  const colors = allColors.slice(0, paletteSize);
+
+  const initializeTask = () => {
+    const newTask = generateTask(maxNumber, paletteSize, includeUncolored, objectType);
+    setTask(newTask);
+    setObjects(newTask.objects);
+    setTallyBoxes(newTask.tallyBoxes);
+    setShowFeedback(null);
+    setMismatchedColors(new Set());
+  };
+
+  useEffect(() => {
+    initializeTask();
+  }, []);
+
+  useEffect(() => {
+    setMuted(!soundEnabled);
+  }, [soundEnabled]);
+
+  const handleObjectClick = (objectId: string) => {
+    setObjects((prev) =>
+      prev.map((obj) =>
+        obj.id === objectId
+          ? { ...obj, color: obj.color === selectedColor ? null : selectedColor }
+          : obj
+      )
+    );
+  };
+
+  const handleAddTally = (colorKey: FillInColor | 'uncolored') => {
+    setTallyBoxes((prev) =>
+      prev.map((box) =>
+        box.color === colorKey && !box.prefilled
+          ? { ...box, currentTally: box.currentTally + 1 }
+          : box
+      )
+    );
+  };
+
+  const handleUndoTally = (colorKey: FillInColor | 'uncolored') => {
+    setTallyBoxes((prev) =>
+      prev.map((box) =>
+        box.color === colorKey && !box.prefilled && box.currentTally > 0
+          ? { ...box, currentTally: box.currentTally - 1 }
+          : box
+      )
+    );
+  };
+
+  const handleClearTally = (colorKey: FillInColor | 'uncolored') => {
+    setTallyBoxes((prev) =>
+      prev.map((box) =>
+        box.color === colorKey && !box.prefilled
+          ? { ...box, currentTally: 0 }
+          : box
+      )
+    );
+  };
+
+  const handleCheck = () => {
+    if (!task) return;
+
+    const taskWithCurrentTallies = { ...task, tallyBoxes };
+    const isCorrect = checkAnswer(taskWithCurrentTallies, objects);
+
+    if (isCorrect) {
+      setShowFeedback('correct');
+      playSound('correct', muted);
+      setScore((prev) => prev + 1);
+      setTimeout(() => {
+        initializeTask();
+      }, 1500);
+    } else {
+      setShowFeedback('incorrect');
+      playSound('incorrect', muted);
+      
+      // Find mismatched colors
+      const colorCounts: Record<string, number> = {
+        blue: 0,
+        red: 0,
+        yellow: 0,
+        green: 0,
+        purple: 0,
+        uncolored: 0,
+      };
+
+      objects.forEach((obj) => {
+        const colorKey = obj.color || 'uncolored';
+        colorCounts[colorKey]++;
+      });
+
+      const mismatched = new Set<string>();
+      tallyBoxes.forEach((box) => {
+        if (box.currentTally !== colorCounts[box.color]) {
+          mismatched.add(box.color);
+        }
+      });
+      
+      setMismatchedColors(mismatched);
+      
+      setTimeout(() => {
+        setShowFeedback(null);
+      }, 1000);
+    }
+  };
+
+  const handleNext = () => {
+    initializeTask();
+  };
+
+  const handleReset = () => {
+    if (task) {
+      setObjects(task.objects.map(obj => ({ ...obj, color: null })));
+      setTallyBoxes(task.tallyBoxes.map(box => 
+        box.prefilled ? box : { ...box, currentTally: 0 }
+      ));
+      setShowFeedback(null);
+      setMismatchedColors(new Set());
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 relative overflow-hidden">
+      <GameHeader
+        score={score}
+        muted={muted}
+        onToggleMute={() => setMuted(!muted)}
+        onReset={handleReset}
+      />
+
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+        <ScoreCounter score={score} />
+      </div>
+
+      <div className="container mx-auto px-4 pt-24 pb-8">
+        <div className="grid lg:grid-cols-[2fr_1fr] gap-8 items-start">
+          {/* Picture frame */}
+          <div className="flex flex-col gap-4">
+            <div className="relative w-full aspect-[4/3] bg-card rounded-3xl border-8 border-primary shadow-[0_0_0_8px_hsl(var(--primary)/0.15)] transition-all duration-300">
+              {objects.map((obj) => (
+                <FillInObject
+                  key={obj.id}
+                  type={obj.type}
+                  color={obj.color}
+                  onClick={() => handleObjectClick(obj.id)}
+                  x={obj.x}
+                  y={obj.y}
+                />
+              ))}
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex gap-4 justify-center">
+              <Button
+                onClick={handleCheck}
+                className="flex items-center gap-2 px-8 py-6 text-lg bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-playful"
+              >
+                <Check size={28} />
+                Check
+              </Button>
+              <Button
+                onClick={handleNext}
+                className="flex items-center gap-2 px-8 py-6 text-lg bg-primary hover:bg-primary/90 rounded-2xl shadow-playful"
+              >
+                <SkipForward size={28} />
+                Next
+              </Button>
+            </div>
+          </div>
+
+          {/* Tally boxes */}
+          <div className="flex flex-col gap-4">
+            {tallyBoxes.map((box) => (
+              <TallyBox
+                key={box.color}
+                color={box.color}
+                currentTally={box.currentTally}
+                prefilled={box.prefilled}
+                onAdd={() => handleAddTally(box.color)}
+                onUndo={() => handleUndoTally(box.color)}
+                onClear={() => handleClearTally(box.color)}
+                showMismatch={mismatchedColors.has(box.color)}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Color palette - bottom right */}
+      <div className="fixed bottom-8 right-8 z-10">
+        <ColorPalette
+          colors={colors}
+          selectedColor={selectedColor}
+          onColorSelect={setSelectedColor}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default FillInGame;

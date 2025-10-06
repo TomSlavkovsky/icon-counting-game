@@ -12,8 +12,8 @@ const games = [
     description: 'Count objects and match them with tally marks',
     color: 'bg-game-blue',
     textColor: 'text-game-blue',
-    path: '/game/fill-in',
-    enabled: false, // Coming soon
+    path: '/game/fillin',
+    enabled: true,
   },
   {
     id: 'cross-out',

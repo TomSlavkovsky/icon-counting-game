@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { SettingsProvider } from "@/contexts/SettingsContext";
 import Hub from "./pages/Hub";
 import CompareGame from "./pages/CompareGame";
+import FillInGame from "./pages/FillInGame";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -20,6 +21,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Hub />} />
             <Route path="/game/compare" element={<CompareGame />} />
+            <Route path="/game/fillin" element={<FillInGame />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
