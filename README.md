@@ -1,4 +1,17 @@
-# Welcome to your Lovable project
+# Math Games for Kids
+
+An interactive collection of educational math games designed to help children learn counting, comparison, and basic arithmetic through playful, colorful activities.
+
+## Available Games
+
+### 🔵 Doplň (Fill In)
+Count objects and match them with tally marks. Players fill in objects with the correct colors based on the number of tally marks shown for each color.
+
+### 🔴 Škrtni (Cross Out)
+Cross out objects and count what remains. Players use a cross tool or color tool to mark objects, then determine how many are left uncrossed.
+
+### 🟡 Porovnej (Compare)
+Find which side has more or fewer objects. Players color objects in two fields and compare quantities to answer which side has more or fewer colored items.
 
 ## Project info
 
