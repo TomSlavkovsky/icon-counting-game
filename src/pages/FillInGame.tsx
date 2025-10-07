@@ -57,29 +57,6 @@ const FillInGame = () => {
           : obj
       );
       
-      // Update tally counts for non-prefilled boxes only
-      const colorCounts: Record<string, number> = {
-        blue: 0,
-        red: 0,
-        yellow: 0,
-        green: 0,
-        purple: 0,
-        uncolored: 0,
-      };
-
-      updatedObjects.forEach((obj) => {
-        const colorKey = obj.color || 'uncolored';
-        colorCounts[colorKey]++;
-      });
-
-      setTallyBoxes((prevBoxes) =>
-        prevBoxes.map((box) => {
-          // Prefilled boxes never change
-          if (box.prefilled) return box;
-          return { ...box, currentTally: colorCounts[box.color] };
-        })
-      );
-      
       return updatedObjects;
     });
   };
