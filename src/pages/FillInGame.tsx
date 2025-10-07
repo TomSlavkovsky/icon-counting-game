@@ -57,36 +57,33 @@ const FillInGame = () => {
           : obj
       );
       
-      // Auto-update tally count only for NON-prefilled boxes
-      updateTalliesFromObjects(updatedObjects);
+      // Update tally counts for non-prefilled boxes only
+      const colorCounts: Record<string, number> = {
+        blue: 0,
+        red: 0,
+        yellow: 0,
+        green: 0,
+        purple: 0,
+        uncolored: 0,
+      };
+
+      updatedObjects.forEach((obj) => {
+        const colorKey = obj.color || 'uncolored';
+        colorCounts[colorKey]++;
+      });
+
+      setTallyBoxes((prevBoxes) =>
+        prevBoxes.map((box) => {
+          // Prefilled boxes never change
+          if (box.prefilled) return box;
+          return { ...box, currentTally: colorCounts[box.color] };
+        })
+      );
       
       return updatedObjects;
     });
   };
 
-  const updateTalliesFromObjects = (currentObjects: FillInObjectType[]) => {
-    const colorCounts: Record<string, number> = {
-      blue: 0,
-      red: 0,
-      yellow: 0,
-      green: 0,
-      purple: 0,
-      uncolored: 0,
-    };
-
-    currentObjects.forEach((obj) => {
-      const colorKey = obj.color || 'uncolored';
-      colorCounts[colorKey]++;
-    });
-
-    setTallyBoxes((prev) =>
-      prev.map((box) => {
-        // Prefilled boxes stay fixed at their initial value
-        if (box.prefilled) return box;
-        return { ...box, currentTally: colorCounts[box.color] };
-      })
-    );
-  };
 
   const handleTallyBoxClick = (color: FillInColor | 'uncolored') => {
     if (color !== 'uncolored') {
@@ -150,16 +147,28 @@ const FillInGame = () => {
 
   const handleReset = () => {
     if (task) {
-      setObjects(task.objects.map(obj => ({ ...obj, color: null })));
-      updateTalliesFromObjects(task.objects.map(obj => ({ ...obj, color: null })));
+      const resetObjects = task.objects.map(obj => ({ ...obj, color: null }));
+      setObjects(resetObjects);
+      
+      // Reset only non-prefilled boxes to 0
+      setTallyBoxes(prev => prev.map(box => 
+        box.prefilled ? box : { ...box, currentTally: 0 }
+      ));
+      
       setShowFeedback(null);
       setMismatchedColors(new Set());
     }
   };
 
   const handleEraser = () => {
-    setObjects(prev => prev.map(obj => ({ ...obj, color: null })));
-    updateTalliesFromObjects(objects.map(obj => ({ ...obj, color: null })));
+    const resetObjects = objects.map(obj => ({ ...obj, color: null }));
+    setObjects(resetObjects);
+    
+    // Reset only non-prefilled boxes to 0
+    setTallyBoxes(prev => prev.map(box => 
+      box.prefilled ? box : { ...box, currentTally: 0 }
+    ));
+    
     setMismatchedColors(new Set());
     setShowFeedback(null);
   };
