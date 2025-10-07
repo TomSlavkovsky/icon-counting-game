@@ -89,6 +89,16 @@ All colors MUST be HSL.
   .animate-trumpet-fly {
     animation: trumpet-fly 800ms ease-out forwards;
   }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .animate-shake {
+    animation: shake 400ms ease-in-out;
+  }
 }
 
 @layer base {

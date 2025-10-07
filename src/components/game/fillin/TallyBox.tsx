@@ -65,7 +65,7 @@ export const TallyBox = ({
 }: TallyBoxProps) => {
   const colorClasses = COLOR_MAP[color];
   const borderClass = showMismatch 
-    ? 'border-4 border-red-500 animate-wiggle' 
+    ? 'border-4 border-red-500 animate-shake' 
     : isActive 
     ? `border-4 ${colorClasses.active}` 
     : 'border-2 border-border';
@@ -73,7 +73,7 @@ export const TallyBox = ({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center gap-2 p-4 bg-card rounded-2xl shadow-soft ${borderClass} transition-all cursor-pointer hover:scale-105 active:scale-95`}
+      className={`flex flex-col items-center gap-2 p-4 bg-card rounded-2xl shadow-soft ${borderClass} transition-all duration-300 cursor-pointer hover:scale-105 active:scale-95`}
       aria-label={`Select ${color} color`}
       aria-pressed={isActive}
     >

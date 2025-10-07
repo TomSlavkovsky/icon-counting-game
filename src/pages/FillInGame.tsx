@@ -46,6 +46,10 @@ const FillInGame = () => {
   }, [soundEnabled]);
 
   const handleObjectClick = (objectId: string) => {
+    // Clear error state when user takes action
+    setMismatchedColors(new Set());
+    setShowFeedback(null);
+    
     setObjects((prev) => {
       const updatedObjects = prev.map((obj) =>
         obj.id === objectId
@@ -135,7 +139,8 @@ const FillInGame = () => {
       
       setTimeout(() => {
         setShowFeedback(null);
-      }, 1000);
+        setMismatchedColors(new Set()); // Clear error outline
+      }, 1500);
     }
   };
 
@@ -146,12 +151,17 @@ const FillInGame = () => {
   const handleReset = () => {
     if (task) {
       setObjects(task.objects.map(obj => ({ ...obj, color: null })));
-      setTallyBoxes(task.tallyBoxes.map(box => 
-        box.prefilled ? box : { ...box, currentTally: 0 }
-      ));
+      updateTalliesFromObjects(task.objects.map(obj => ({ ...obj, color: null })));
       setShowFeedback(null);
       setMismatchedColors(new Set());
     }
+  };
+
+  const handleEraser = () => {
+    setObjects(prev => prev.map(obj => ({ ...obj, color: null })));
+    updateTalliesFromObjects(objects.map(obj => ({ ...obj, color: null })));
+    setMismatchedColors(new Set());
+    setShowFeedback(null);
   };
 
   return (
@@ -171,9 +181,9 @@ const FillInGame = () => {
       <div className="absolute top-4 right-4 z-10">
         <Button
           onClick={handleNext}
-          className="flex items-center justify-center w-16 h-16 bg-primary hover:bg-primary/90 text-white rounded-2xl shadow-playful"
+          className="flex items-center justify-center w-16 h-16 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-playful"
         >
-          <SkipForward size={32} strokeWidth={3} />
+          <SkipForward size={40} strokeWidth={2.5} />
         </Button>
       </div>
 
@@ -194,13 +204,20 @@ const FillInGame = () => {
               ))}
             </div>
 
-            {/* Check button */}
+            {/* Action buttons */}
             <div className="flex gap-4 justify-center">
               <Button
                 onClick={handleCheck}
                 className="flex items-center justify-center w-20 h-20 bg-green-600 hover:bg-green-700 text-white rounded-2xl shadow-playful"
               >
-                <Check size={48} strokeWidth={3} />
+                <Check size={48} strokeWidth={2.5} />
+              </Button>
+              <Button
+                onClick={handleEraser}
+                className="flex items-center justify-center w-20 h-20 bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-2xl shadow-playful"
+                aria-label="Erase all colors"
+              >
+                <span className="text-4xl">🧹</span>
               </Button>
             </div>
           </div>

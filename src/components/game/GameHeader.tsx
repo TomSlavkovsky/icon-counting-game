@@ -16,10 +16,10 @@ export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderPr
     <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
       <Link to="/">
         <Button 
-          className="h-12 px-4 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center gap-2" 
+          className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center justify-center" 
           aria-label="Back to hub"
         >
-          <ArrowLeft size={24} className="text-foreground" />
+          <ArrowLeft size={32} strokeWidth={2.5} className="text-foreground" />
         </Button>
       </Link>
       
@@ -33,7 +33,7 @@ export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderPr
             className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful"
             aria-label="Reset game"
           >
-            <RotateCcw size={24} />
+            <RotateCcw size={32} strokeWidth={2.5} />
           </Button>
         )}
       </div>
