@@ -81,8 +81,7 @@ const FillInGame = () => {
 
     setTallyBoxes((prev) =>
       prev.map((box) => {
-        // NEVER update prefilled boxes
-        if (box.prefilled) return box;
+        // Always update currentTally to reflect actual colored objects
         return { ...box, currentTally: colorCounts[box.color] };
       })
     );
