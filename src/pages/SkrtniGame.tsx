@@ -167,17 +167,15 @@ const SkrtniGame = () => {
                 >
                   <X size={32} strokeWidth={2.5} />
                 </Button>
-                {skrtniEnableColoring && (
-                  <Button
-                    onClick={() => setActiveTool('color')}
-                    className={`flex items-center justify-center w-16 h-16 rounded-xl ${
-                      activeTool === 'color' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
-                    }`}
-                    aria-label="Color tool"
-                  >
-                    <Paintbrush size={32} strokeWidth={2.5} />
-                  </Button>
-                )}
+                <Button
+                  onClick={() => setActiveTool('color')}
+                  className={`flex items-center justify-center w-16 h-16 rounded-xl ${
+                    activeTool === 'color' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'
+                  }`}
+                  aria-label="Color tool"
+                >
+                  <Paintbrush size={32} strokeWidth={2.5} />
+                </Button>
               </div>
               
               <Button
