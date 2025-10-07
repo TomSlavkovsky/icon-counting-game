@@ -22,8 +22,8 @@ const games = [
     description: 'Cross out objects and count what remains',
     color: 'bg-game-red',
     textColor: 'text-game-red',
-    path: '/game/cross-out',
-    enabled: false, // Coming soon
+    path: '/game/skrtni',
+    enabled: true,
   },
   {
     id: 'compare',
