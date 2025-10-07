@@ -60,9 +60,16 @@ export const generateTask = (
   const positions = generatePositions(totalObjects);
 
   const prefilledCount = numberOfBoxes - 1;
-  const partition = getRandomPartition(totalObjects - 1, prefilledCount, allowZero);
   
-  const requiredCrossed = partition.reduce((sum, val) => sum + val, 0);
+  // Generate sum for prefilled boxes that's at least 1 and at most totalObjects - 1
+  // This ensures remainder can be anywhere from 1 to totalObjects - 1
+  const minSum = 1;
+  const maxSum = totalObjects - 1;
+  const prefilledSum = Math.floor(Math.random() * (maxSum - minSum + 1)) + minSum;
+  
+  const partition = getRandomPartition(prefilledSum, prefilledCount, allowZero);
+  
+  const requiredCrossed = prefilledSum;
   const requiredRemainder = totalObjects - requiredCrossed;
 
   const objects: SkrtniObject[] = positions.map((pos, index) => ({
