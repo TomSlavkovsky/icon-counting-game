@@ -21,6 +21,7 @@ const AdditionGame = () => {
   const [score, setScore] = useState(0);
   const [showMismatch, setShowMismatch] = useState(false);
   const [mismatchedBoxIndex, setMismatchedBoxIndex] = useState<number | undefined>();
+  const [showSum, setShowSum] = useState(false);
 
   const generateNewTask = () => {
     const objectType = objectSets[Math.floor(Math.random() * objectSets.length)];
@@ -28,6 +29,7 @@ const AdditionGame = () => {
     setTask(newTask);
     setShowMismatch(false);
     setMismatchedBoxIndex(undefined);
+    setShowSum(false);
   };
 
   useEffect(() => {
@@ -91,9 +93,10 @@ const AdditionGame = () => {
     if (correct) {
       playSound(true, soundEnabled);
       setScore(score + 1);
+      setShowSum(true);
       setTimeout(() => {
         generateNewTask();
-      }, 500);
+      }, 1500);
     } else {
       playSound(false, soundEnabled);
       setShowMismatch(true);
@@ -133,13 +136,13 @@ const AdditionGame = () => {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto">
         {/* Top Boxes (Addend Boxes) */}
-        <div className="flex justify-center gap-4 mb-4">
+        <div className="flex justify-center gap-4 mb-8">
           {task.boxes.map((box, index) => (
             <div key={box.id} className="flex items-center gap-4">
               {index > 0 && (
                 <div className="text-6xl font-bold text-primary">+</div>
               )}
-              <div className="w-48">
+              <div className="w-60">
                 <AdditionObjectBox
                   objects={box.objects}
                   objectType={task.objectType}
@@ -152,31 +155,17 @@ const AdditionGame = () => {
           ))}
         </div>
 
-        {/* Connector Lines */}
-        <div className="flex justify-center mb-4">
-          <div className="flex items-center gap-4">
-            {task.boxes.map((_, index) => (
-              <div key={`connector-${index}`} className="flex items-center gap-4">
-                {index > 0 && <div className="w-12" />}
-                <div className="w-48 flex justify-center">
-                  <div className="w-0.5 h-12 bg-border" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Equals Sign */}
-        <div className="text-6xl font-bold text-primary text-center mb-4">=</div>
-
-        {/* Connector Line to Result */}
-        <div className="flex justify-center mb-4">
-          <div className="w-0.5 h-12 bg-border" />
-        </div>
+        <div className="text-6xl font-bold text-primary text-center mb-8">=</div>
 
         {/* Result Box */}
-        <div className="flex justify-center mb-8">
-          <div className="w-64">
+        <div className="flex flex-col items-center mb-8">
+          {showSum && (
+            <div className="text-8xl font-bold text-primary mb-4 animate-in fade-in zoom-in duration-500">
+              {task.targetSum}
+            </div>
+          )}
+          <div className="w-60">
             {task.exerciseType === 'sum-by-tallies' ? (
               <AdditionTallyBox
                 value={task.userTallies}
