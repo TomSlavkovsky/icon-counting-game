@@ -7,7 +7,8 @@ import { AdditionTask, AdditionObject } from '@/components/game/addition/types';
 import { AdditionTallyBox } from '@/components/game/addition/AdditionTallyBox';
 import { AdditionObjectBox } from '@/components/game/addition/AdditionObjectBox';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
-import { GameControls } from '@/components/game/GameControls';
+import { GameHeader } from '@/components/game/GameHeader';
+import { ScoreCounter } from '@/components/game/ScoreCounter';
 
 const AdditionGame = () => {
   const { maxNumber, soundEnabled, teacherMode, objectSets } = useSettings();
@@ -18,9 +19,14 @@ const AdditionGame = () => {
   
   const [task, setTask] = useState<AdditionTask | null>(null);
   const [score, setScore] = useState(0);
+  const [muted, setMuted] = useState(!soundEnabled);
   const [showMismatch, setShowMismatch] = useState(false);
   const [mismatchedBoxIndex, setMismatchedBoxIndex] = useState<number | undefined>();
   const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
+
+  useEffect(() => {
+    setMuted(!soundEnabled);
+  }, [soundEnabled]);
 
   const generateNewTask = () => {
     const objectType = objectSets[Math.floor(Math.random() * objectSets.length)];
@@ -110,11 +116,21 @@ const AdditionGame = () => {
   if (!task) return null;
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <GameControls score={score} onRepeat={generateNewTask} />
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 relative overflow-hidden">
+      <GameHeader
+        score={score}
+        muted={muted}
+        onToggleMute={() => setMuted(!muted)}
+        onReset={generateNewTask}
+      />
+
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+        <ScoreCounter score={score} />
+      </div>
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto flex flex-col items-center">
+      <div className="container mx-auto px-4 pt-24 pb-8">
+        <div className="max-w-4xl mx-auto flex flex-col items-center">
         {/* Top Boxes (Addend Boxes) */}
         <div className="flex justify-center gap-4 mb-8">
           {task.boxes.map((box, index) => (
@@ -139,33 +155,26 @@ const AdditionGame = () => {
         <div className="text-6xl font-bold text-primary mb-8">=</div>
 
         {/* Result Box - Centered */}
-        <div className="w-60 mb-8">
-          {task.exerciseType === 'sum-by-tallies' ? (
-            <AdditionTallyBox
-              value={task.userTallies}
-              showMismatch={showMismatch && mismatchedBoxIndex === -1}
-              showDigits={teacherMode}
-              onTap={handleTallyTap}
-            />
-          ) : (
-            <AdditionTallyBox
-              value={task.targetSum}
-              showDigits={teacherMode}
-            />
-          )}
+        <div className="flex justify-center mb-8">
+          <div className="w-60">
+            {task.exerciseType === 'sum-by-tallies' ? (
+              <AdditionTallyBox
+                value={task.userTallies}
+                showMismatch={showMismatch && mismatchedBoxIndex === -1}
+                showDigits={teacherMode}
+                onTap={handleTallyTap}
+              />
+            ) : (
+              <AdditionTallyBox
+                value={task.targetSum}
+                showDigits={teacherMode}
+              />
+            )}
+          </div>
         </div>
 
         {/* Controls */}
         <div className="flex justify-center gap-4">
-          <Button
-            onClick={handleCheck}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl px-12 h-14 text-lg"
-            aria-label="Check answer"
-          >
-            <Check size={28} className="mr-2" />
-            Check
-          </Button>
-          
           <Button
             onClick={handleEraser}
             onMouseDown={(e) => {
@@ -181,6 +190,16 @@ const AdditionGame = () => {
           >
             <Eraser size={28} />
           </Button>
+          
+          <Button
+            onClick={handleCheck}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl px-12 h-14 text-lg"
+            aria-label="Check answer"
+          >
+            <Check size={28} className="mr-2" />
+            Check
+          </Button>
+        </div>
         </div>
       </div>
 
