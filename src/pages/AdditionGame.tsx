@@ -1,17 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, RotateCcw, Eraser, Check } from 'lucide-react';
+import { Eraser, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 import { generateTask, checkAnswer, playSound } from '@/components/game/addition/additionUtils';
 import { AdditionTask, AdditionObject } from '@/components/game/addition/types';
 import { AdditionTallyBox } from '@/components/game/addition/AdditionTallyBox';
 import { AdditionObjectBox } from '@/components/game/addition/AdditionObjectBox';
-import { ScoreCounter } from '@/components/game/ScoreCounter';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
+import { GameControls } from '@/components/game/GameControls';
 
 const AdditionGame = () => {
-  const navigate = useNavigate();
   const { maxNumber, soundEnabled, teacherMode, objectSets } = useSettings();
   
   const [additionBoxCount] = useState(2);
@@ -113,29 +111,10 @@ const AdditionGame = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <Button
-          onClick={() => navigate('/')}
-          className="bg-game-yellow hover:bg-game-yellow/90 text-white rounded-2xl px-6 h-12"
-          aria-label="Back to menu"
-        >
-          <ChevronLeft size={24} />
-        </Button>
-        
-        <ScoreCounter score={score} />
-        
-        <Button
-          onClick={generateNewTask}
-          className="bg-game-yellow hover:bg-game-yellow/90 text-white rounded-full w-12 h-12 p-0"
-          aria-label="Repeat task"
-        >
-          <RotateCcw size={24} />
-        </Button>
-      </div>
+      <GameControls score={score} onRepeat={generateNewTask} />
 
       {/* Main Content */}
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-4xl mx-auto flex flex-col items-center">
         {/* Top Boxes (Addend Boxes) */}
         <div className="flex justify-center gap-4 mb-8">
           {task.boxes.map((box, index) => (
@@ -157,29 +136,36 @@ const AdditionGame = () => {
         </div>
 
         {/* Equals Sign */}
-        <div className="text-6xl font-bold text-primary text-center mb-8">=</div>
+        <div className="text-6xl font-bold text-primary mb-8">=</div>
 
-        {/* Result Box */}
-        <div className="flex flex-col items-center mb-8">
-          <div className="w-60">
-            {task.exerciseType === 'sum-by-tallies' ? (
-              <AdditionTallyBox
-                value={task.userTallies}
-                showMismatch={showMismatch && mismatchedBoxIndex === -1}
-                showDigits={teacherMode}
-                onTap={handleTallyTap}
-              />
-            ) : (
-              <AdditionTallyBox
-                value={task.targetSum}
-                showDigits={teacherMode}
-              />
-            )}
-          </div>
+        {/* Result Box - Centered */}
+        <div className="w-60 mb-8">
+          {task.exerciseType === 'sum-by-tallies' ? (
+            <AdditionTallyBox
+              value={task.userTallies}
+              showMismatch={showMismatch && mismatchedBoxIndex === -1}
+              showDigits={teacherMode}
+              onTap={handleTallyTap}
+            />
+          ) : (
+            <AdditionTallyBox
+              value={task.targetSum}
+              showDigits={teacherMode}
+            />
+          )}
         </div>
 
         {/* Controls */}
         <div className="flex justify-center gap-4">
+          <Button
+            onClick={handleCheck}
+            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl px-12 h-14 text-lg"
+            aria-label="Check answer"
+          >
+            <Check size={28} className="mr-2" />
+            Check
+          </Button>
+          
           <Button
             onClick={handleEraser}
             onMouseDown={(e) => {
@@ -194,15 +180,6 @@ const AdditionGame = () => {
             aria-label="Eraser"
           >
             <Eraser size={28} />
-          </Button>
-          
-          <Button
-            onClick={handleCheck}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl px-12 h-14 text-lg"
-            aria-label="Check answer"
-          >
-            <Check size={28} className="mr-2" />
-            Check
           </Button>
         </div>
       </div>
