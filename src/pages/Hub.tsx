@@ -35,6 +35,16 @@ const games = [
     path: '/game/compare',
     enabled: true,
   },
+  {
+    id: 'addition',
+    title: 'Sečti',
+    subtitle: 'Addition',
+    description: 'Practice addition with objects and tally marks',
+    color: 'bg-game-purple',
+    textColor: 'text-game-purple',
+    path: '/game/addition',
+    enabled: true,
+  },
 ];
 
 const Hub = () => {
