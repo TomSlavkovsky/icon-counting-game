@@ -16,20 +16,19 @@ const renderTallyMarks = (count: number) => {
 
   for (let i = 0; i < groups; i++) {
     marks.push(
-      <svg key={`group-${i}`} width="42" height="36" viewBox="0 0 42 36" className="inline-block mx-1">
+      <svg key={`group-${i}`} width="42" height="36" viewBox="0 0 42 36" className="inline-block mr-2">
         <line x1="5" y1="8" x2="5" y2="28" stroke="currentColor" strokeWidth="3" />
         <line x1="12" y1="8" x2="12" y2="28" stroke="currentColor" strokeWidth="3" />
         <line x1="19" y1="8" x2="19" y2="28" stroke="currentColor" strokeWidth="3" />
         <line x1="26" y1="8" x2="26" y2="28" stroke="currentColor" strokeWidth="3" />
         <line x1="33" y1="8" x2="33" y2="28" stroke="currentColor" strokeWidth="3" />
-        <line x1="2" y1="18" x2="36" y2="18" stroke="currentColor" strokeWidth="3" />
       </svg>
     );
   }
 
   if (remainder > 0) {
     marks.push(
-      <svg key="remainder" width={remainder * 7 + 6} height="36" viewBox={`0 0 ${remainder * 7 + 6} 36`} className="inline-block mx-1">
+      <svg key="remainder" width={remainder * 7 + 6} height="36" viewBox={`0 0 ${remainder * 7 + 6} 36`} className="inline-block">
         {Array.from({ length: remainder }).map((_, i) => (
           <line key={i} x1={6 + i * 7} y1="8" x2={6 + i * 7} y2="28" stroke="currentColor" strokeWidth="3" />
         ))}

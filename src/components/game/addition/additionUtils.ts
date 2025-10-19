@@ -40,12 +40,16 @@ export const generateTask = (
   const boxes: AdditionTask['boxes'] = [];
   
   if (exerciseType === 'sum-by-tallies') {
-    // Generate random counts for all boxes
+    // Generate random counts for all boxes ensuring sum doesn't exceed maxNumber
     let targetSum = 0;
+    const maxPerBox = Math.floor(maxNumber / numberOfBoxes);
     
     for (let i = 0; i < numberOfBoxes; i++) {
       const shouldBeZero = allowZero && Math.random() < 0.2;
-      const count = shouldBeZero ? 0 : Math.floor(Math.random() * maxNumber) + 1;
+      const remainingSum = maxNumber - targetSum;
+      const remainingBoxes = numberOfBoxes - i;
+      const maxForThisBox = Math.min(maxPerBox, remainingSum - (remainingBoxes - 1));
+      const count = shouldBeZero ? 0 : Math.floor(Math.random() * Math.max(1, maxForThisBox)) + 1;
       targetSum += count;
       
       const positions = generatePositions(count);

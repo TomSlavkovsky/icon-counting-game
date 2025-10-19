@@ -133,7 +133,7 @@ const AdditionGame = () => {
       {/* Main Content */}
       <div className="max-w-4xl mx-auto">
         {/* Top Boxes (Addend Boxes) */}
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="flex justify-center gap-4 mb-4">
           {task.boxes.map((box, index) => (
             <div key={box.id} className="flex items-center gap-4">
               {index > 0 && (
@@ -152,8 +152,27 @@ const AdditionGame = () => {
           ))}
         </div>
 
+        {/* Connector Lines */}
+        <div className="flex justify-center mb-4">
+          <div className="flex items-center gap-4">
+            {task.boxes.map((_, index) => (
+              <div key={`connector-${index}`} className="flex items-center gap-4">
+                {index > 0 && <div className="w-12" />}
+                <div className="w-48 flex justify-center">
+                  <div className="w-0.5 h-12 bg-border" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* Equals Sign */}
-        <div className="text-6xl font-bold text-primary text-center mb-8">=</div>
+        <div className="text-6xl font-bold text-primary text-center mb-4">=</div>
+
+        {/* Connector Line to Result */}
+        <div className="flex justify-center mb-4">
+          <div className="w-0.5 h-12 bg-border" />
+        </div>
 
         {/* Result Box */}
         <div className="flex justify-center mb-8">
@@ -186,11 +205,10 @@ const AdditionGame = () => {
               };
               document.addEventListener('mouseup', cleanup);
             }}
-            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-2xl px-8 h-14 text-lg"
+            className="bg-secondary hover:bg-secondary/90 text-secondary-foreground rounded-xl w-14 h-14 p-0"
             aria-label="Eraser"
           >
-            <Eraser size={28} className="mr-2" />
-            Eraser
+            <Eraser size={28} />
           </Button>
           
           <Button
