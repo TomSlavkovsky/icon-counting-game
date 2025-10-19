@@ -6,6 +6,7 @@ import { ColorPalette } from '@/components/game/fillin/ColorPalette';
 import { TallyBox } from '@/components/game/fillin/TallyBox';
 import { FillInObject } from '@/components/game/fillin/FillInObject';
 import { FillInTask, FillInColor, FillInObject as FillInObjectType } from '@/components/game/fillin/types';
+import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 import { generateTask, checkAnswer, playSound } from '@/components/game/fillin/fillInUtils';
 import { Check, SkipForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -225,12 +226,7 @@ const FillInGame = () => {
         </div>
       </div>
 
-      {/* Success animation */}
-      {showSuccessAnimation && (
-        <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-50">
-          <div className="animate-trumpet-fly text-6xl">🎺</div>
-        </div>
-      )}
+      <SuccessAnimation show={showSuccessAnimation} />
     </div>
   );
 };

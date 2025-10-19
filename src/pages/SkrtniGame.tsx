@@ -5,6 +5,7 @@ import { ScoreCounter } from '@/components/game/ScoreCounter';
 import { SkrtniObject } from '@/components/game/skrtni/SkrtniObject';
 import { SkrtniTallyBox } from '@/components/game/skrtni/SkrtniTallyBox';
 import { SkrtniTask, SkrtniObject as SkrtniObjectType, ToolType, SkrtniColor } from '@/components/game/skrtni/types';
+import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 import { generateTask, checkAnswer, playSound } from '@/components/game/skrtni/skrtniUtils';
 import { Check, SkipForward, X, Paintbrush } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -203,11 +204,7 @@ const SkrtniGame = () => {
         </div>
       </div>
 
-      {showSuccessAnimation && (
-        <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-50">
-          <div className="animate-trumpet-fly text-6xl">🎺</div>
-        </div>
-      )}
+      <SuccessAnimation show={showSuccessAnimation} />
     </div>
   );
 };

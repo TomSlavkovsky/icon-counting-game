@@ -8,6 +8,7 @@ import { AdditionTask, AdditionObject } from '@/components/game/addition/types';
 import { AdditionTallyBox } from '@/components/game/addition/AdditionTallyBox';
 import { AdditionObjectBox } from '@/components/game/addition/AdditionObjectBox';
 import { ScoreCounter } from '@/components/game/ScoreCounter';
+import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 
 const AdditionGame = () => {
   const navigate = useNavigate();
@@ -21,7 +22,7 @@ const AdditionGame = () => {
   const [score, setScore] = useState(0);
   const [showMismatch, setShowMismatch] = useState(false);
   const [mismatchedBoxIndex, setMismatchedBoxIndex] = useState<number | undefined>();
-  const [showSum, setShowSum] = useState(false);
+  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   const generateNewTask = () => {
     const objectType = objectSets[Math.floor(Math.random() * objectSets.length)];
@@ -29,7 +30,7 @@ const AdditionGame = () => {
     setTask(newTask);
     setShowMismatch(false);
     setMismatchedBoxIndex(undefined);
-    setShowSum(false);
+    setShowSuccessAnimation(false);
   };
 
   useEffect(() => {
@@ -93,10 +94,10 @@ const AdditionGame = () => {
     if (correct) {
       playSound(true, soundEnabled);
       setScore(score + 1);
-      setShowSum(true);
+      setShowSuccessAnimation(true);
       setTimeout(() => {
         generateNewTask();
-      }, 1500);
+      }, 800);
     } else {
       playSound(false, soundEnabled);
       setShowMismatch(true);
@@ -160,11 +161,6 @@ const AdditionGame = () => {
 
         {/* Result Box */}
         <div className="flex flex-col items-center mb-8">
-          {showSum && (
-            <div className="text-8xl font-bold text-primary mb-4 animate-in fade-in zoom-in duration-500">
-              {task.targetSum}
-            </div>
-          )}
           <div className="w-60">
             {task.exerciseType === 'sum-by-tallies' ? (
               <AdditionTallyBox
@@ -210,6 +206,13 @@ const AdditionGame = () => {
           </Button>
         </div>
       </div>
+
+      {/* Success Animation */}
+      <SuccessAnimation 
+        show={showSuccessAnimation} 
+        result={task.targetSum}
+        showTada={true}
+      />
     </div>
   );
 };
