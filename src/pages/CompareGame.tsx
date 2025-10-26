@@ -8,7 +8,7 @@ import { generateTask, checkAnswer, playSound } from '@/components/game/gameUtil
 import { useSettings } from '@/contexts/SettingsContext';
 
 const CompareGame = () => {
-  const { soundEnabled } = useSettings();
+  const { soundEnabled, setSoundEnabled } = useSettings();
   const [task, setTask] = useState<GameTask>(() => generateTask());
   const [selectedColor, setSelectedColor] = useState<ColorChoice>('blue');
   const [score, setScore] = useState(0);
@@ -74,21 +74,22 @@ const CompareGame = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-2 sm:p-4 md:p-8 relative overflow-auto">
+    <div className="h-screen overflow-hidden bg-background flex flex-col items-center p-4 pb-8">
       {/* Header with back and reset buttons */}
-      <GameHeader
-        score={score}
-        muted={!soundEnabled}
-        onToggleMute={() => {}}
-        onReset={handleNextTask}
-      />
-
-      {/* Score Counter - centered at top */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-        <ScoreCounter score={score} />
+      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+        <GameHeader
+          score={score}
+          muted={!soundEnabled}
+          onToggleMute={() => setSoundEnabled(!soundEnabled)}
+          onReset={handleNextTask}
+        />
+        
+        <div className="absolute left-1/2 -translate-x-1/2">
+          <ScoreCounter score={score} />
+        </div>
       </div>
 
-      <div className="w-full max-w-7xl pt-16 sm:pt-0">
+      <div className="w-full max-w-7xl mt-24">
         {/* Game Fields */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 items-start">
           <GameField
@@ -110,7 +111,7 @@ const CompareGame = () => {
       </div>
 
       {/* Color Selector - bottom right */}
-      <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-10 animate-slide-up">
+      <div className="absolute bottom-4 right-4 z-10">
         <ColorSelector selected={selectedColor} onChange={setSelectedColor} />
       </div>
     </div>
