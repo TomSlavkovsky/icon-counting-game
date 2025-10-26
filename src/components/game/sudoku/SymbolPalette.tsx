@@ -37,20 +37,25 @@ export const SymbolPalette = ({ mode, board, selectedCell, selectedSymbol, onSel
         return (
           <button
             key={num}
-            onClick={() => !isDisabled && onSelect(symbol)}
+            onClick={() => {
+              console.log('Palette button clicked:', { symbol, isDisabled, selectedCell, isCandidate });
+              if (!isDisabled) {
+                onSelect(symbol);
+              }
+            }}
             disabled={isDisabled}
             className={`
               flex-1 aspect-square min-h-[60px] relative
               rounded-2xl shadow-soft flex items-center justify-center 
               text-4xl font-bold transition-all
               ${isSelected ? 'bg-game-blue scale-95 ring-4 ring-game-blue/50' : 'bg-game-blue hover:bg-game-blue/80'}
-              ${isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105'}
+              ${isDisabled ? 'opacity-40 cursor-not-allowed' : 'hover:scale-105 active:scale-95'}
               text-foreground
             `}
           >
             {symbols[num]}
             {isUsedFully && (
-              <div className="absolute inset-0 flex items-center justify-center">
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                 <div className="text-5xl font-bold text-red-500 rotate-45">×</div>
               </div>
             )}

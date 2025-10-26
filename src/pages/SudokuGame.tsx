@@ -73,30 +73,38 @@ const SudokuGame = () => {
   };
 
   const handleCellClick = (row: number, col: number) => {
+    console.log('Cell clicked:', { row, col, isGiven: gameState.board.cells[row][col].isGiven, selectedSymbol });
+    
     if (gameState.board.cells[row][col].isGiven) return;
     
     // If we have a selected symbol, try to place it
     if (selectedSymbol !== null) {
+      console.log('Placing selected symbol:', { selectedSymbol, row, col });
       setValue(selectedSymbol, row, col);
       setSelectedSymbol(null);
       return;
     }
     
     // Otherwise, just select the cell
+    console.log('Selecting cell:', { row, col });
     setGameState((prev) => ({ ...prev, selectedCell: { row, col } }));
     setHintCell(null);
   };
 
   const handleSymbolSelect = (symbol: SudokuSymbol) => {
+    console.log('handleSymbolSelect called:', { symbol, selectedCell: gameState.selectedCell });
+    
     if (gameState.selectedCell) {
       // Cell already selected, place symbol
       const { row, col } = gameState.selectedCell;
       if (!gameState.board.cells[row][col].isGiven) {
+        console.log('Placing symbol in selected cell:', { row, col, symbol });
         setValue(symbol, row, col);
       }
       setSelectedSymbol(null);
     } else {
       // No cell selected, just select the symbol
+      console.log('Setting selected symbol:', symbol);
       setSelectedSymbol(symbol);
     }
   };
