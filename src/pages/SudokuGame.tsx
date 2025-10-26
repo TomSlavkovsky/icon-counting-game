@@ -3,26 +3,27 @@ import { GameHeader } from '@/components/game/GameHeader';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 import { SudokuBoard } from '@/components/game/sudoku/SudokuBoard';
 import { SymbolPalette } from '@/components/game/sudoku/SymbolPalette';
+import { SudokuSettings } from '@/components/game/sudoku/SudokuSettings';
 import { generatePuzzle } from '@/components/game/sudoku/sudokuGenerator';
 import { validateBoard, isComplete, findHint, updateAllPencilMarks } from '@/components/game/sudoku/sudokuSolver';
-import { GameState, SudokuSymbol, SudokuBoard as BoardType, HintResult } from '@/components/game/sudoku/types';
+import { GameState, SudokuSymbol, SudokuBoard as BoardType, HintResult, SymbolMode, Difficulty } from '@/components/game/sudoku/types';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Button } from '@/components/ui/button';
-import { Lightbulb, Undo2, Redo2, Check, Eraser } from 'lucide-react';
+import { Lightbulb, Eraser, Settings } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SudokuGame = () => {
   const { soundEnabled, setSoundEnabled } = useSettings();
   const [score, setScore] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showPalette, setShowPalette] = useState(false);
   const [hintCell, setHintCell] = useState<HintResult | null>(null);
+  const [showSettings, setShowSettings] = useState(false);
+  const [selectedSymbol, setSelectedSymbol] = useState<SudokuSymbol | null>(null);
   
-  // Settings from context (we'll add these to SettingsContext)
-  const [symbolMode, setSymbolMode] = useState<'shapes' | 'digits'>('shapes');
-  const [difficulty, setDifficulty] = useState<'starter' | 'explorer' | 'challenge'>('starter');
-  const [errorHighlights, setErrorHighlights] = useState(true);
-  const [pencilMarksEnabled, setPencilMarksEnabled] = useState(true);
+  const [symbolMode, setSymbolMode] = useState<SymbolMode>('shapes');
+  const [difficulty, setDifficulty] = useState<Difficulty>('starter');
+  const [errorHighlights] = useState(true);
+  const [pencilMarksEnabled] = useState(true);
   
   const [gameState, setGameState] = useState<GameState>(() => {
     const board = generatePuzzle(difficulty);
@@ -50,6 +51,7 @@ const SudokuGame = () => {
     });
     setHintCell(null);
     setShowSuccess(false);
+    setSelectedSymbol(null);
   };
 
   const resetGame = () => {
@@ -67,25 +69,45 @@ const SudokuGame = () => {
     });
     setHintCell(null);
     setShowSuccess(false);
+    setSelectedSymbol(null);
   };
 
   const handleCellClick = (row: number, col: number) => {
     if (gameState.board.cells[row][col].isGiven) return;
     
-    if (gameState.selectedCell?.row === row && gameState.selectedCell?.col === col) {
-      setGameState((prev) => ({ ...prev, selectedCell: null }));
-      setShowPalette(false);
-    } else {
-      setGameState((prev) => ({ ...prev, selectedCell: { row, col } }));
-      setShowPalette(true);
+    // If we have a selected symbol, try to place it
+    if (selectedSymbol !== null) {
+      const cell = gameState.board.cells[row][col];
+      if (cell.pencilMarks.has(selectedSymbol)) {
+        setValue(selectedSymbol, row, col);
+        setSelectedSymbol(null);
+        setGameState((prev) => ({ ...prev, selectedCell: null }));
+        return;
+      }
     }
+    
+    // Otherwise, just select the cell
+    setGameState((prev) => ({ ...prev, selectedCell: { row, col } }));
     setHintCell(null);
   };
 
-  const setValue = (value: SudokuSymbol) => {
-    if (!gameState.selectedCell) return;
+  const handleSymbolSelect = (symbol: SudokuSymbol) => {
+    if (gameState.selectedCell) {
+      // Cell already selected, place symbol
+      const { row, col } = gameState.selectedCell;
+      setValue(symbol, row, col);
+      setSelectedSymbol(null);
+    } else {
+      // No cell selected, just select the symbol
+      setSelectedSymbol(symbol);
+    }
+  };
+
+  const setValue = (value: SudokuSymbol, targetRow?: number, targetCol?: number) => {
+    const row = targetRow ?? gameState.selectedCell?.row;
+    const col = targetCol ?? gameState.selectedCell?.col;
     
-    const { row, col } = gameState.selectedCell;
+    if (row === undefined || col === undefined) return;
     if (gameState.board.cells[row][col].isGiven) return;
     
     const newBoard = JSON.parse(JSON.stringify(gameState.board));
@@ -101,55 +123,34 @@ const SudokuGame = () => {
       history: newHistory,
       historyIndex: newHistory.length - 1,
       errors: errorHighlights ? validateBoard(newBoard) : new Set(),
+      selectedCell: null,
     }));
+    
+    setSelectedSymbol(null);
     
     if (isComplete(newBoard)) {
       setShowSuccess(true);
       setScore((prev) => prev + 1);
       setTimeout(() => {
         newGame();
-      }, 2000);
+      }, 600);
     }
   };
 
   const clearCell = () => {
     if (!gameState.selectedCell) {
-      toast.error('Select a cell first');
+      if (window.confirm('Clear the entire board? This will reset to the starting puzzle.')) {
+        resetGame();
+      }
       return;
     }
     setValue(0);
   };
 
-  const undo = () => {
-    if (gameState.historyIndex > 0) {
-      const newIndex = gameState.historyIndex - 1;
-      const newBoard = JSON.parse(JSON.stringify(gameState.history[newIndex]));
-      setGameState((prev) => ({
-        ...prev,
-        board: newBoard,
-        historyIndex: newIndex,
-        errors: errorHighlights ? validateBoard(newBoard) : new Set(),
-      }));
-    }
-  };
-
-  const redo = () => {
-    if (gameState.historyIndex < gameState.history.length - 1) {
-      const newIndex = gameState.historyIndex + 1;
-      const newBoard = JSON.parse(JSON.stringify(gameState.history[newIndex]));
-      setGameState((prev) => ({
-        ...prev,
-        board: newBoard,
-        historyIndex: newIndex,
-        errors: errorHighlights ? validateBoard(newBoard) : new Set(),
-      }));
-    }
-  };
 
   const handleHint = () => {
     if (hintCell) {
-      // Second tap: fill the hint
-      setValue(hintCell.value);
+      setValue(hintCell.value, hintCell.row, hintCell.col);
       setHintCell(null);
       toast.success('Hint applied!');
     } else {
@@ -164,30 +165,44 @@ const SudokuGame = () => {
     }
   };
 
-  const checkBoard = () => {
-    const errors = validateBoard(gameState.board);
-    if (errors.size === 0) {
-      toast.success('No errors found!');
-    } else {
-      toast.error(`Found ${errors.size} error(s)`);
-    }
-    if (errorHighlights) {
-      setGameState((prev) => ({ ...prev, errors }));
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
-      <GameHeader
-        score={score}
-        muted={!soundEnabled}
-        onToggleMute={() => setSoundEnabled(!soundEnabled)}
-        onReset={resetGame}
-      />
-
-      <div className="flex flex-col items-center gap-6 mt-20">
-        <h1 className="text-4xl font-bold text-primary">Mini Sudoku</h1>
+    <div className="min-h-screen bg-background flex flex-col items-center p-4 pb-8">
+      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+        <GameHeader
+          score={score}
+          muted={!soundEnabled}
+          onToggleMute={() => setSoundEnabled(!soundEnabled)}
+          onReset={resetGame}
+        />
         
+        <div className="flex items-center gap-2 ml-auto">
+          <Button
+            onClick={handleHint}
+            className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center justify-center"
+            aria-label="Hint"
+          >
+            <Lightbulb size={28} strokeWidth={2.5} />
+          </Button>
+          
+          <Button
+            onClick={clearCell}
+            className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center justify-center"
+            aria-label="Clear"
+          >
+            <Eraser size={28} strokeWidth={2.5} />
+          </Button>
+
+          <Button
+            onClick={() => setShowSettings(true)}
+            className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center justify-center"
+            aria-label="Settings"
+          >
+            <Settings size={28} strokeWidth={2.5} />
+          </Button>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center gap-6 mt-24 w-full max-w-4xl px-4">
         <SudokuBoard
           board={gameState.board}
           mode={symbolMode}
@@ -197,87 +212,30 @@ const SudokuGame = () => {
           onCellClick={handleCellClick}
         />
 
-        <div className="flex flex-wrap gap-3 justify-center">
-          <Button
-            onClick={handleHint}
-            className="h-14 px-6 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful"
-          >
-            <Lightbulb size={24} />
-            Hint
-          </Button>
-          
-          <Button
-            onClick={clearCell}
-            className="h-14 px-6 bg-game-red hover:bg-game-red/90 text-foreground rounded-2xl shadow-playful"
-          >
-            <Eraser size={24} />
-            Clear
-          </Button>
-
-          <Button
-            onClick={undo}
-            disabled={gameState.historyIndex === 0}
-            className="h-14 w-14 bg-card hover:bg-accent rounded-2xl shadow-soft"
-          >
-            <Undo2 size={24} />
-          </Button>
-
-          <Button
-            onClick={redo}
-            disabled={gameState.historyIndex === gameState.history.length - 1}
-            className="h-14 w-14 bg-card hover:bg-accent rounded-2xl shadow-soft"
-          >
-            <Redo2 size={24} />
-          </Button>
-
-          <Button
-            onClick={checkBoard}
-            className="h-14 px-6 bg-game-blue hover:bg-game-blue/90 text-foreground rounded-2xl shadow-playful"
-          >
-            <Check size={24} />
-            Check
-          </Button>
-
-          <Button
-            onClick={newGame}
-            className="h-14 px-6 bg-game-purple hover:bg-game-purple/90 text-foreground rounded-2xl shadow-playful"
-          >
-            New Puzzle
-          </Button>
-        </div>
-
-        <div className="flex gap-3 mt-2">
-          <Button
-            onClick={() => setSymbolMode(symbolMode === 'shapes' ? 'digits' : 'shapes')}
-            variant="outline"
-            className="rounded-xl"
-          >
-            {symbolMode === 'shapes' ? 'Switch to Digits' : 'Switch to Shapes'}
-          </Button>
-          
-          <Button
-            onClick={() => {
-              const modes: Array<'starter' | 'explorer' | 'challenge'> = ['starter', 'explorer', 'challenge'];
-              const idx = modes.indexOf(difficulty);
-              const next = modes[(idx + 1) % modes.length];
-              setDifficulty(next);
-              toast.info(`Difficulty: ${next}`);
-            }}
-            variant="outline"
-            className="rounded-xl"
-          >
-            Difficulty: {difficulty}
-          </Button>
-        </div>
-      </div>
-
-      {showPalette && (
         <SymbolPalette
           mode={symbolMode}
-          onSelect={setValue}
-          onClose={() => setShowPalette(false)}
+          board={gameState.board}
+          selectedCell={gameState.selectedCell}
+          selectedSymbol={selectedSymbol}
+          onSelect={handleSymbolSelect}
         />
-      )}
+      </div>
+
+      <SudokuSettings
+        open={showSettings}
+        onClose={() => setShowSettings(false)}
+        symbolMode={symbolMode}
+        difficulty={difficulty}
+        onSymbolModeChange={(mode) => {
+          setSymbolMode(mode);
+          localStorage.setItem('sudoku-symbol-mode', mode);
+        }}
+        onDifficultyChange={(diff) => {
+          setDifficulty(diff);
+          localStorage.setItem('sudoku-difficulty', diff);
+          newGame();
+        }}
+      />
 
       <SuccessAnimation show={showSuccess} showTada />
     </div>

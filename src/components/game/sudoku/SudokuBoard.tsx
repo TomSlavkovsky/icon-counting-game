@@ -19,23 +19,34 @@ export const SudokuBoard = ({
   onCellClick,
 }: SudokuBoardProps) => {
   return (
-    <div className="inline-block bg-foreground/20 p-2 rounded-2xl">
-      <div className="grid grid-cols-4 gap-0 bg-background rounded-xl overflow-hidden">
-        {board.cells.map((row, r) =>
-          row.map((cell, c) => (
-            <SudokuCell
-              key={`${r}-${c}`}
-              cell={cell}
-              row={r}
-              col={c}
-              mode={mode}
-              isSelected={selectedCell?.row === r && selectedCell?.col === c}
-              isError={errors.has(`${r}-${c}`)}
-              showPencilMarks={showPencilMarks}
-              onClick={() => onCellClick(r, c)}
-            />
-          ))
-        )}
+    <div className="w-full flex justify-center">
+      <div 
+        className="bg-foreground/20 p-2 rounded-2xl"
+        style={{
+          width: 'clamp(320px, 70vmin, 720px)',
+          maxWidth: '100%',
+        }}
+      >
+        <div 
+          className="grid grid-cols-4 gap-0 bg-background rounded-xl overflow-hidden"
+          style={{ aspectRatio: '1/1' }}
+        >
+          {board.cells.map((row, r) =>
+            row.map((cell, c) => (
+              <SudokuCell
+                key={`${r}-${c}`}
+                cell={cell}
+                row={r}
+                col={c}
+                mode={mode}
+                isSelected={selectedCell?.row === r && selectedCell?.col === c}
+                isError={errors.has(`${r}-${c}`)}
+                showPencilMarks={showPencilMarks}
+                onClick={() => onCellClick(r, c)}
+              />
+            ))
+          )}
+        </div>
       </div>
     </div>
   );
