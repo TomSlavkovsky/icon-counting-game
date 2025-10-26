@@ -1,4 +1,4 @@
-import { SudokuBoard, SudokuSymbol, HintResult, Difficulty } from './types';
+import { SudokuBoard, SudokuSymbol, HintResult, Difficulty, cloneBoard } from './types';
 
 export function getCandidates(board: SudokuBoard, row: number, col: number): Set<SudokuSymbol> {
   if (board.cells[row][col].value !== 0) return new Set();
@@ -46,6 +46,9 @@ export function updateAllPencilMarks(board: SudokuBoard): void {
       if (board.cells[r][c].value === 0) {
         board.cells[r][c].pencilMarks = getCandidates(board, r, c);
       } else {
+        if (!board.cells[r][c].pencilMarks) {
+          board.cells[r][c].pencilMarks = new Set();
+        }
         board.cells[r][c].pencilMarks.clear();
       }
     }
@@ -226,7 +229,7 @@ export function solve(board: SudokuBoard, difficulty: Difficulty): boolean {
 }
 
 export function hasUniqueSolution(board: SudokuBoard): boolean {
-  const boardCopy = JSON.parse(JSON.stringify(board));
+  const boardCopy = cloneBoard(board);
   let solutionCount = 0;
   
   function countSolutions(bd: SudokuBoard): void {

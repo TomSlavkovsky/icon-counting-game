@@ -6,7 +6,7 @@ import { SymbolPalette } from '@/components/game/sudoku/SymbolPalette';
 import { SudokuSettings } from '@/components/game/sudoku/SudokuSettings';
 import { generatePuzzle } from '@/components/game/sudoku/sudokuGenerator';
 import { validateBoard, isComplete, findHint, updateAllPencilMarks } from '@/components/game/sudoku/sudokuSolver';
-import { GameState, SudokuSymbol, SudokuBoard as BoardType, HintResult, SymbolMode, Difficulty } from '@/components/game/sudoku/types';
+import { GameState, SudokuSymbol, SudokuBoard as BoardType, HintResult, SymbolMode, Difficulty, cloneBoard } from '@/components/game/sudoku/types';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, Eraser, Settings } from 'lucide-react';
@@ -30,7 +30,7 @@ const SudokuGame = () => {
     updateAllPencilMarks(board);
     return {
       board,
-      history: [JSON.parse(JSON.stringify(board))],
+      history: [cloneBoard(board)],
       historyIndex: 0,
       selectedCell: null,
       isComplete: false,
@@ -43,7 +43,7 @@ const SudokuGame = () => {
     updateAllPencilMarks(board);
     setGameState({
       board,
-      history: [JSON.parse(JSON.stringify(board))],
+      history: [cloneBoard(board)],
       historyIndex: 0,
       selectedCell: null,
       isComplete: false,
@@ -56,7 +56,7 @@ const SudokuGame = () => {
 
   const resetGame = () => {
     setGameState((prev) => {
-      const initialBoard = JSON.parse(JSON.stringify(prev.history[0]));
+      const initialBoard = cloneBoard(prev.history[0]);
       return {
         ...prev,
         board: initialBoard,
@@ -116,12 +116,12 @@ const SudokuGame = () => {
     if (row === undefined || col === undefined) return;
     if (gameState.board.cells[row][col].isGiven) return;
     
-    const newBoard = JSON.parse(JSON.stringify(gameState.board));
+    const newBoard = cloneBoard(gameState.board);
     newBoard.cells[row][col].value = value;
     updateAllPencilMarks(newBoard);
     
     const newHistory = gameState.history.slice(0, gameState.historyIndex + 1);
-    newHistory.push(JSON.parse(JSON.stringify(newBoard)));
+    newHistory.push(cloneBoard(newBoard));
     
     setGameState((prev) => ({
       ...prev,

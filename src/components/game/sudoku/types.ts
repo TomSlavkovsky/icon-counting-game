@@ -28,5 +28,31 @@ export interface HintResult {
   reason: string;
 }
 
-export const SHAPES = ['', '■', '◆', '●', '★'] as const;
-export const DIGITS = ['', '1', '2', '3', '4'] as const;
+export const SHAPES: Record<number, string> = {
+  0: '',
+  1: '■',
+  2: '◆',
+  3: '●',
+  4: '★',
+};
+
+export const DIGITS: Record<number, string> = {
+  0: '',
+  1: '1',
+  2: '2',
+  3: '3',
+  4: '4',
+};
+
+// Helper function to properly clone a board with Sets
+export function cloneBoard(board: SudokuBoard): SudokuBoard {
+  return {
+    cells: board.cells.map(row =>
+      row.map(cell => ({
+        value: cell.value,
+        isGiven: cell.isGiven,
+        pencilMarks: new Set(cell.pencilMarks),
+      }))
+    ),
+  };
+}
