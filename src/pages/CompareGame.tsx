@@ -2,8 +2,7 @@ import { useState, useCallback } from 'react';
 import { GameTask, ColorChoice } from '@/components/game/types';
 import { GameField } from '@/components/game/GameField';
 import { ColorSelector } from '@/components/game/ColorSelector';
-import { GameHeader } from '@/components/game/GameHeader';
-import { ScoreCounter } from '@/components/game/ScoreCounter';
+import { GameLayout } from '@/components/game/GameLayout';
 import { generateTask, checkAnswer, playSound } from '@/components/game/gameUtils';
 import { useSettings } from '@/contexts/SettingsContext';
 
@@ -74,23 +73,13 @@ const CompareGame = () => {
   }, []);
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex items-center justify-center p-4 relative">
-      {/* Left side controls */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
-        <GameHeader
-          score={score}
-          muted={!soundEnabled}
-          onToggleMute={() => setSoundEnabled(!soundEnabled)}
-          onReset={handleNextTask}
-        />
-      </div>
-
-      {/* Score Counter - top center */}
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-        <ScoreCounter score={score} />
-      </div>
-
-      {/* Game Fields - centered */}
+    <GameLayout
+      score={score}
+      muted={!soundEnabled}
+      onToggleMute={() => setSoundEnabled(!soundEnabled)}
+      onReset={handleNextTask}
+      bottomRightControls={<ColorSelector selected={selectedColor} onChange={setSelectedColor} />}
+    >
       <div className="w-full max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 items-start">
           <GameField
@@ -110,12 +99,7 @@ const CompareGame = () => {
           />
         </div>
       </div>
-
-      {/* Color Selector - bottom right */}
-      <div className="absolute bottom-4 right-4 z-10">
-        <ColorSelector selected={selectedColor} onChange={setSelectedColor} />
-      </div>
-    </div>
+    </GameLayout>
   );
 };
 
