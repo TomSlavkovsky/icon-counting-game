@@ -74,23 +74,24 @@ const CompareGame = () => {
   }, []);
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex flex-col items-center p-4 pb-8">
-      {/* Header with back and reset buttons */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+    <div className="h-screen overflow-hidden bg-background flex items-center justify-center p-4 relative">
+      {/* Left side controls */}
+      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-10">
         <GameHeader
           score={score}
           muted={!soundEnabled}
           onToggleMute={() => setSoundEnabled(!soundEnabled)}
           onReset={handleNextTask}
         />
-        
-        <div className="absolute left-1/2 -translate-x-1/2">
-          <ScoreCounter score={score} />
-        </div>
       </div>
 
-      <div className="w-full max-w-7xl mt-24">
-        {/* Game Fields */}
+      {/* Score Counter - top center */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
+        <ScoreCounter score={score} />
+      </div>
+
+      {/* Game Fields - centered */}
+      <div className="w-full max-w-7xl">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-8 items-start">
           <GameField
             field={task.leftField}
