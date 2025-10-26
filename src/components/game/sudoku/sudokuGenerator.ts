@@ -1,4 +1,4 @@
-import { SudokuBoard, SudokuCell, Difficulty, SudokuSymbol } from './types';
+import { SudokuBoard, SudokuCell, Difficulty, SudokuSymbol, cloneBoard } from './types';
 import { hasUniqueSolution, findHint, getCandidates } from './sudokuSolver';
 
 function createEmptyBoard(): SudokuBoard {
@@ -40,7 +40,7 @@ function fillBoard(board: SudokuBoard): boolean {
 }
 
 function canSolveWithTechniques(board: SudokuBoard, difficulty: Difficulty): boolean {
-  const boardCopy = JSON.parse(JSON.stringify(board));
+  const boardCopy = cloneBoard(board);
   
   let maxIterations = 50;
   while (maxIterations-- > 0) {
