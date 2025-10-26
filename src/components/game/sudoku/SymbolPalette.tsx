@@ -28,17 +28,13 @@ export const SymbolPalette = ({ mode, board, selectedCell, selectedSymbol, onSel
         const symbol = num as SudokuSymbol;
         const usedCount = countSymbolOccurrences(board, symbol);
         const isUsedFully = usedCount >= 4;
-        const isCandidate = selectedCell 
-          ? board.cells[selectedCell.row][selectedCell.col].pencilMarks.has(symbol)
-          : true;
-        const isDisabled = isUsedFully || (selectedCell && !isCandidate);
+        const isDisabled = isUsedFully;
         const isSelected = selectedSymbol === symbol;
 
         return (
           <button
             key={num}
             onClick={() => {
-              console.log('Palette button clicked:', { symbol, isDisabled, selectedCell, isCandidate });
               if (!isDisabled) {
                 onSelect(symbol);
               }
