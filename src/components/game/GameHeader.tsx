@@ -13,7 +13,7 @@ interface GameHeaderProps {
 
 export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderProps) => {
   return (
-    <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+    <div className="flex items-center gap-2">
       <Link to="/">
         <Button 
           className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center justify-center" 
@@ -23,20 +23,18 @@ export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderPr
         </Button>
       </Link>
       
-      <div className="flex items-center gap-2">
-        <SoundToggle muted={muted} onToggle={onToggleMute} />
-        {onReset && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onReset}
-            className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful"
-            aria-label="Reset game"
-          >
-            <RotateCcw size={32} strokeWidth={2.5} />
-          </Button>
-        )}
-      </div>
+      <SoundToggle muted={muted} onToggle={onToggleMute} />
+      {onReset && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onReset}
+          className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful"
+          aria-label="Reset game"
+        >
+          <RotateCcw size={32} strokeWidth={2.5} />
+        </Button>
+      )}
     </div>
   );
 };

@@ -77,13 +77,9 @@ const SudokuGame = () => {
     
     // If we have a selected symbol, try to place it
     if (selectedSymbol !== null) {
-      const cell = gameState.board.cells[row][col];
-      if (cell.pencilMarks.has(selectedSymbol)) {
-        setValue(selectedSymbol, row, col);
-        setSelectedSymbol(null);
-        setGameState((prev) => ({ ...prev, selectedCell: null }));
-        return;
-      }
+      setValue(selectedSymbol, row, col);
+      setSelectedSymbol(null);
+      return;
     }
     
     // Otherwise, just select the cell
@@ -95,7 +91,9 @@ const SudokuGame = () => {
     if (gameState.selectedCell) {
       // Cell already selected, place symbol
       const { row, col } = gameState.selectedCell;
-      setValue(symbol, row, col);
+      if (!gameState.board.cells[row][col].isGiven) {
+        setValue(symbol, row, col);
+      }
       setSelectedSymbol(null);
     } else {
       // No cell selected, just select the symbol
@@ -175,7 +173,7 @@ const SudokuGame = () => {
           onReset={resetGame}
         />
         
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2">
           <Button
             onClick={handleHint}
             className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center justify-center"
