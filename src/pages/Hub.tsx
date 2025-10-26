@@ -58,6 +58,16 @@ const playGames = [
     path: '/game/tictactoe',
     enabled: true,
   },
+  {
+    id: 'sudoku',
+    title: 'Mini Sudoku',
+    subtitle: '4×4 Sudoku',
+    description: 'Solve kid-friendly 4×4 puzzles with shapes or digits',
+    color: 'bg-purple-500',
+    textColor: 'text-purple-500',
+    path: '/game/sudoku',
+    enabled: true,
+  },
 ];
 
 const Hub = () => {
