@@ -43,12 +43,14 @@ export function getCandidates(board: SudokuBoard, row: number, col: number): Set
 export function updateAllPencilMarks(board: SudokuBoard): void {
   for (let r = 0; r < 4; r++) {
     for (let c = 0; c < 4; c++) {
+      // Ensure pencilMarks is a Set
+      if (!(board.cells[r][c].pencilMarks instanceof Set)) {
+        board.cells[r][c].pencilMarks = new Set();
+      }
+      
       if (board.cells[r][c].value === 0) {
         board.cells[r][c].pencilMarks = getCandidates(board, r, c);
       } else {
-        if (!board.cells[r][c].pencilMarks) {
-          board.cells[r][c].pencilMarks = new Set();
-        }
         board.cells[r][c].pencilMarks.clear();
       }
     }

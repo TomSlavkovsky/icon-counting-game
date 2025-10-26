@@ -1,3 +1,4 @@
+// Sudoku Game v2.1 - Fixed Set cloning issue
 import { useState, useEffect } from 'react';
 import { GameHeader } from '@/components/game/GameHeader';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
