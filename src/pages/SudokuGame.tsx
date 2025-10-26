@@ -24,7 +24,6 @@ const SudokuGame = () => {
   const [symbolMode, setSymbolMode] = useState<SymbolMode>('shapes');
   const [difficulty, setDifficulty] = useState<Difficulty>('starter');
   const [errorHighlights] = useState(true);
-  const [pencilMarksEnabled] = useState(true);
   
   const [gameState, setGameState] = useState<GameState>(() => {
     const board = generatePuzzle(difficulty);
@@ -173,7 +172,7 @@ const SudokuGame = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col items-center p-4 pb-8">
+    <div className="h-screen overflow-hidden bg-background flex flex-col items-center p-4 pb-8">
       <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
         <GameHeader
           score={score}
@@ -215,7 +214,7 @@ const SudokuGame = () => {
           mode={symbolMode}
           selectedCell={gameState.selectedCell}
           errors={gameState.errors}
-          showPencilMarks={pencilMarksEnabled}
+          showPencilMarks={false}
           onCellClick={handleCellClick}
         />
 
