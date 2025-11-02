@@ -7,8 +7,7 @@ import { AdditionTask, AdditionObject } from '@/components/game/addition/types';
 import { AdditionTallyBox } from '@/components/game/addition/AdditionTallyBox';
 import { AdditionObjectBox } from '@/components/game/addition/AdditionObjectBox';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
-import { GameHeader } from '@/components/game/GameHeader';
-import { ScoreCounter } from '@/components/game/ScoreCounter';
+import { GameLayout } from '@/components/game/GameLayout';
 
 const AdditionGame = () => {
   const { maxNumber, soundEnabled, teacherMode, objectSets } = useSettings();
@@ -116,20 +115,14 @@ const AdditionGame = () => {
   if (!task) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 relative overflow-hidden">
-      <GameHeader
-        score={score}
-        muted={muted}
-        onToggleMute={() => setMuted(!muted)}
-        onReset={generateNewTask}
-      />
-
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-        <ScoreCounter score={score} />
-      </div>
-
-      {/* Main Content */}
-      <div className="container mx-auto px-4 pt-24 pb-8">
+    <GameLayout
+      score={score}
+      muted={muted}
+      onToggleMute={() => setMuted(!muted)}
+      onReset={generateNewTask}
+      onNext={generateNewTask}
+    >
+      <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto flex flex-col items-center">
         {/* Top Boxes (Addend Boxes) */}
         <div className="flex justify-center gap-4 mb-8">
@@ -209,7 +202,7 @@ const AdditionGame = () => {
         result={task.targetSum}
         showTada={true}
       />
-    </div>
+    </GameLayout>
   );
 };
 

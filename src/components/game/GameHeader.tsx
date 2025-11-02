@@ -1,4 +1,4 @@
-import { ArrowLeft, RotateCcw } from 'lucide-react';
+import { ArrowLeft, RotateCcw, SkipForward } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ScoreCounter } from './ScoreCounter';
@@ -9,9 +9,10 @@ interface GameHeaderProps {
   muted: boolean;
   onToggleMute: () => void;
   onReset?: () => void;
+  onNext?: () => void;
 }
 
-export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderProps) => {
+export const GameHeader = ({ score, muted, onToggleMute, onReset, onNext }: GameHeaderProps) => {
   return (
     <div className="flex items-center gap-2">
       <Link to="/">
@@ -33,6 +34,17 @@ export const GameHeader = ({ score, muted, onToggleMute, onReset }: GameHeaderPr
           aria-label="Reset game"
         >
           <RotateCcw size={32} strokeWidth={2.5} />
+        </Button>
+      )}
+      {onNext && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onNext}
+          className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful"
+          aria-label="Next task"
+        >
+          <SkipForward size={32} strokeWidth={2.5} />
         </Button>
       )}
     </div>

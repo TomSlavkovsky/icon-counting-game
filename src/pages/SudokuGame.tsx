@@ -1,6 +1,6 @@
 // Sudoku Game v2.1 - Fixed Set cloning issue
 import { useState, useEffect } from 'react';
-import { GameHeader } from '@/components/game/GameHeader';
+import { GameLayout } from '@/components/game/GameLayout';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 import { SudokuBoard } from '@/components/game/sudoku/SudokuBoard';
 import { SymbolPalette } from '@/components/game/sudoku/SymbolPalette';
@@ -172,16 +172,13 @@ const SudokuGame = () => {
   };
 
   return (
-    <div className="h-screen overflow-hidden bg-background flex flex-col items-center p-4 pb-8">
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
-        <GameHeader
-          score={score}
-          muted={!soundEnabled}
-          onToggleMute={() => setSoundEnabled(!soundEnabled)}
-          onReset={resetGame}
-        />
-        
-        <div className="flex items-center gap-2">
+    <GameLayout
+      score={score}
+      muted={!soundEnabled}
+      onToggleMute={() => setSoundEnabled(!soundEnabled)}
+      onReset={resetGame}
+      topRightControls={
+        <>
           <Button
             onClick={handleHint}
             className="h-14 w-14 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful flex items-center justify-center"
@@ -205,10 +202,10 @@ const SudokuGame = () => {
           >
             <Settings size={28} strokeWidth={2.5} />
           </Button>
-        </div>
-      </div>
-
-      <div className="flex flex-col items-center gap-6 mt-24 w-full max-w-4xl px-4">
+        </>
+      }
+    >
+      <div className="flex flex-col items-center gap-6 w-full max-w-4xl px-4">
         <SudokuBoard
           board={gameState.board}
           mode={symbolMode}
@@ -244,7 +241,7 @@ const SudokuGame = () => {
       />
 
       <SuccessAnimation show={showSuccess} showTada />
-    </div>
+    </GameLayout>
   );
 };
 

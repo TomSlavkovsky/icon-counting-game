@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
-import { GameHeader } from '@/components/game/GameHeader';
-import { ScoreCounter } from '@/components/game/ScoreCounter';
-import { ColorPalette } from '@/components/game/fillin/ColorPalette';
+import { GameLayout } from '@/components/game/GameLayout';
 import { TallyBox } from '@/components/game/fillin/TallyBox';
 import { FillInObject } from '@/components/game/fillin/FillInObject';
 import { FillInTask, FillInColor, FillInObject as FillInObjectType } from '@/components/game/fillin/types';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 import { generateTask, checkAnswer, playSound } from '@/components/game/fillin/fillInUtils';
-import { Check, SkipForward } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const FillInGame = () => {
@@ -152,29 +150,14 @@ const FillInGame = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 relative overflow-hidden">
-      <GameHeader
-        score={score}
-        muted={muted}
-        onToggleMute={() => setMuted(!muted)}
-        onReset={handleReset}
-      />
-
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-        <ScoreCounter score={score} />
-      </div>
-
-      {/* Next button - top right */}
-      <div className="absolute top-4 right-4 z-10">
-        <Button
-          onClick={handleNext}
-          className="flex items-center justify-center w-16 h-16 bg-primary hover:bg-primary/90 text-primary-foreground rounded-2xl shadow-playful"
-        >
-          <SkipForward size={40} strokeWidth={2.5} />
-        </Button>
-      </div>
-
-      <div className="container mx-auto px-4 pt-24 pb-8">
+    <GameLayout
+      score={score}
+      muted={muted}
+      onToggleMute={() => setMuted(!muted)}
+      onReset={handleReset}
+      onNext={handleNext}
+    >
+      <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start justify-center">
           {/* Picture frame */}
           <div className="flex flex-col gap-4 flex-shrink-0 w-full lg:w-auto">
@@ -227,7 +210,7 @@ const FillInGame = () => {
       </div>
 
       <SuccessAnimation show={showSuccessAnimation} />
-    </div>
+    </GameLayout>
   );
 };
 

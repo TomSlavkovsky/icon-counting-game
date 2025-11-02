@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSettings } from '@/contexts/SettingsContext';
-import { GameHeader } from '@/components/game/GameHeader';
-import { ScoreCounter } from '@/components/game/ScoreCounter';
+import { GameLayout } from '@/components/game/GameLayout';
 import { SkrtniObject } from '@/components/game/skrtni/SkrtniObject';
 import { SkrtniTallyBox } from '@/components/game/skrtni/SkrtniTallyBox';
 import { SkrtniTask, SkrtniObject as SkrtniObjectType, ToolType, SkrtniColor } from '@/components/game/skrtni/types';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 import { generateTask, checkAnswer, playSound } from '@/components/game/skrtni/skrtniUtils';
-import { Check, SkipForward, X, Paintbrush } from 'lucide-react';
+import { Check, X, Paintbrush } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const SkrtniGame = () => {
@@ -119,28 +118,14 @@ const SkrtniGame = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-accent/5 relative overflow-hidden">
-      <GameHeader
-        score={score}
-        muted={muted}
-        onToggleMute={() => setMuted(!muted)}
-        onReset={handleReset}
-      />
-
-      <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10">
-        <ScoreCounter score={score} />
-      </div>
-
-      <div className="absolute top-4 right-4 z-10">
-        <Button
-          onClick={handleNext}
-          className="flex items-center justify-center w-16 h-16 bg-[#FFD93D] hover:bg-[#FFD93D]/90 text-white rounded-2xl shadow-playful"
-        >
-          <SkipForward size={40} strokeWidth={2.5} />
-        </Button>
-      </div>
-
-      <div className="container mx-auto px-4 pt-24 pb-8">
+    <GameLayout
+      score={score}
+      muted={muted}
+      onToggleMute={() => setMuted(!muted)}
+      onReset={handleReset}
+      onNext={handleNext}
+    >
+      <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row gap-4 lg:gap-8 items-center lg:items-start justify-center">
           <div className="flex flex-col gap-4 flex-shrink-0 w-full lg:w-auto">
             <div className="relative w-full lg:w-[600px] aspect-[4/3] bg-card rounded-3xl border-8 border-primary shadow-[0_0_0_8px_hsl(var(--primary)/0.15)] transition-all duration-300">
@@ -205,7 +190,7 @@ const SkrtniGame = () => {
       </div>
 
       <SuccessAnimation show={showSuccessAnimation} />
-    </div>
+    </GameLayout>
   );
 };
 

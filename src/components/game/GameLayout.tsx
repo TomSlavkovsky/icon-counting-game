@@ -7,6 +7,7 @@ interface GameLayoutProps {
   muted: boolean;
   onToggleMute: () => void;
   onReset?: () => void;
+  onNext?: () => void;
   children: ReactNode;
   topRightControls?: ReactNode;
   bottomRightControls?: ReactNode;
@@ -18,6 +19,7 @@ export const GameLayout = ({
   muted,
   onToggleMute,
   onReset,
+  onNext,
   children,
   topRightControls,
   bottomRightControls,
@@ -32,6 +34,7 @@ export const GameLayout = ({
           muted={muted}
           onToggleMute={onToggleMute}
           onReset={onReset}
+          onNext={onNext}
         />
         
         {showScore && (

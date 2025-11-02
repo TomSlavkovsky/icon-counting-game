@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { GameHeader } from '@/components/game/GameHeader';
+import { GameLayout } from '@/components/game/GameLayout';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
@@ -126,18 +126,16 @@ const TicTacToe = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 relative overflow-hidden">
-      <GameHeader 
-        score={score}
-        muted={!soundEnabled}
-        onToggleMute={() => setSoundEnabled(!soundEnabled)}
-        onReset={handleReset}
-      />
-
+    <GameLayout
+      score={score}
+      muted={!soundEnabled}
+      onToggleMute={() => setSoundEnabled(!soundEnabled)}
+      onReset={handleReset}
+    >
       <SuccessAnimation show={showSuccess} showTada={true} />
 
-      <div className="container mx-auto px-4 pt-24 pb-8">
-        <div className="flex flex-col items-center justify-center min-h-[calc(100vh-12rem)]">
+      <div className="container mx-auto px-4">
+        <div className="flex flex-col items-center justify-center">
           <div className="mb-8 text-center">
             <h1 className="text-4xl font-bold mb-2">Piškvorky</h1>
             <p className="text-lg text-muted-foreground">
@@ -183,7 +181,7 @@ const TicTacToe = () => {
           )}
         </div>
       </div>
-    </div>
+    </GameLayout>
   );
 };
 
