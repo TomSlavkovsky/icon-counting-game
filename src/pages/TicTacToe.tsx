@@ -4,27 +4,101 @@ import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 
-type Player = 'X' | 'O' | null;
+type Player = 'player' | 'computer' | null;
 type Board = Player[];
 
-const WINNING_COMBINATIONS = [
-  [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-  [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-  [0, 4, 8], [2, 4, 6] // diagonals
-];
+// Syllables for random selection
+const SYLLABLES = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'r', 's', 't', 'u', 'v', 'w', 'y', 'z'];
+
+// Generate winning combinations for 5x5 grid (4 in a row)
+const generateWinningCombinations = () => {
+  const combinations: number[][] = [];
+  
+  // Rows
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col <= 1; col++) {
+      combinations.push([
+        row * 5 + col,
+        row * 5 + col + 1,
+        row * 5 + col + 2,
+        row * 5 + col + 3
+      ]);
+    }
+  }
+  
+  // Columns
+  for (let col = 0; col < 5; col++) {
+    for (let row = 0; row <= 1; row++) {
+      combinations.push([
+        row * 5 + col,
+        (row + 1) * 5 + col,
+        (row + 2) * 5 + col,
+        (row + 3) * 5 + col
+      ]);
+    }
+  }
+  
+  // Diagonals (top-left to bottom-right)
+  for (let row = 0; row <= 1; row++) {
+    for (let col = 0; col <= 1; col++) {
+      combinations.push([
+        row * 5 + col,
+        (row + 1) * 5 + col + 1,
+        (row + 2) * 5 + col + 2,
+        (row + 3) * 5 + col + 3
+      ]);
+    }
+  }
+  
+  // Diagonals (top-right to bottom-left)
+  for (let row = 0; row <= 1; row++) {
+    for (let col = 3; col < 5; col++) {
+      combinations.push([
+        row * 5 + col,
+        (row + 1) * 5 + col - 1,
+        (row + 2) * 5 + col - 2,
+        (row + 3) * 5 + col - 3
+      ]);
+    }
+  }
+  
+  return combinations;
+};
+
+const WINNING_COMBINATIONS = generateWinningCombinations();
 
 const TicTacToe = () => {
   const { soundEnabled, setSoundEnabled } = useSettings();
-  const [board, setBoard] = useState<Board>(Array(9).fill(null));
+  const [board, setBoard] = useState<Board>(Array(25).fill(null));
   const [isPlayerTurn, setIsPlayerTurn] = useState(true);
   const [winner, setWinner] = useState<Player | 'draw' | null>(null);
   const [score, setScore] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
+  
+  // Generate random syllables for each game
+  const [playerSymbol, setPlayerSymbol] = useState('');
+  const [computerSymbol, setComputerSymbol] = useState('');
+  const [useUpperCase, setUseUpperCase] = useState(false);
+
+  const generateSymbols = () => {
+    const shuffled = [...SYLLABLES].sort(() => Math.random() - 0.5);
+    const upper = Math.random() > 0.5;
+    setUseUpperCase(upper);
+    setPlayerSymbol(upper ? shuffled[0].toUpperCase() : shuffled[0]);
+    setComputerSymbol(upper ? shuffled[1].toUpperCase() : shuffled[1]);
+  };
+
+  useEffect(() => {
+    generateSymbols();
+  }, []);
 
   const checkWinner = (currentBoard: Board): Player | 'draw' | null => {
     for (const combo of WINNING_COMBINATIONS) {
-      const [a, b, c] = combo;
-      if (currentBoard[a] && currentBoard[a] === currentBoard[b] && currentBoard[a] === currentBoard[c]) {
+      const [a, b, c, d] = combo;
+      if (currentBoard[a] && 
+          currentBoard[a] === currentBoard[b] && 
+          currentBoard[a] === currentBoard[c] && 
+          currentBoard[a] === currentBoard[d]) {
         return currentBoard[a];
       }
     }
@@ -36,28 +110,28 @@ const TicTacToe = () => {
 
   const getComputerMove = (currentBoard: Board): number => {
     // Try to win
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 25; i++) {
       if (currentBoard[i] === null) {
         const testBoard = [...currentBoard];
-        testBoard[i] = 'O';
-        if (checkWinner(testBoard) === 'O') return i;
+        testBoard[i] = 'computer';
+        if (checkWinner(testBoard) === 'computer') return i;
       }
     }
 
     // Block player from winning
-    for (let i = 0; i < 9; i++) {
+    for (let i = 0; i < 25; i++) {
       if (currentBoard[i] === null) {
         const testBoard = [...currentBoard];
-        testBoard[i] = 'X';
-        if (checkWinner(testBoard) === 'X') return i;
+        testBoard[i] = 'player';
+        if (checkWinner(testBoard) === 'player') return i;
       }
     }
 
     // Take center if available
-    if (currentBoard[4] === null) return 4;
+    if (currentBoard[12] === null) return 12;
 
     // Take a corner
-    const corners = [0, 2, 6, 8];
+    const corners = [0, 4, 20, 24];
     const availableCorners = corners.filter(i => currentBoard[i] === null);
     if (availableCorners.length > 0) {
       return availableCorners[Math.floor(Math.random() * availableCorners.length)];
@@ -73,13 +147,13 @@ const TicTacToe = () => {
       const timer = setTimeout(() => {
         const move = getComputerMove(board);
         const newBoard = [...board];
-        newBoard[move] = 'O';
+        newBoard[move] = 'computer';
         setBoard(newBoard);
         
         const gameWinner = checkWinner(newBoard);
         if (gameWinner) {
           setWinner(gameWinner);
-          if (gameWinner === 'X') {
+          if (gameWinner === 'player') {
             setScore(s => s + 1);
             setShowSuccess(true);
             setTimeout(() => setShowSuccess(false), 2000);
@@ -97,13 +171,13 @@ const TicTacToe = () => {
     if (board[index] || winner || !isPlayerTurn) return;
 
     const newBoard = [...board];
-    newBoard[index] = 'X';
+    newBoard[index] = 'player';
     setBoard(newBoard);
 
     const gameWinner = checkWinner(newBoard);
     if (gameWinner) {
       setWinner(gameWinner);
-      if (gameWinner === 'X') {
+      if (gameWinner === 'player') {
         setScore(s => s + 1);
         setShowSuccess(true);
         setTimeout(() => setShowSuccess(false), 2000);
@@ -114,14 +188,21 @@ const TicTacToe = () => {
   };
 
   const handleReset = () => {
-    setBoard(Array(9).fill(null));
+    setBoard(Array(25).fill(null));
     setIsPlayerTurn(true);
     setWinner(null);
+    generateSymbols();
   };
 
   const getCellColor = (cell: Player) => {
-    if (cell === 'X') return 'text-game-blue';
-    if (cell === 'O') return 'text-game-red';
+    if (cell === 'player') return 'text-game-blue';
+    if (cell === 'computer') return 'text-game-red';
+    return '';
+  };
+
+  const getCellText = (cell: Player) => {
+    if (cell === 'player') return playerSymbol;
+    if (cell === 'computer') return computerSymbol;
     return '';
   };
 
@@ -136,37 +217,40 @@ const TicTacToe = () => {
 
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center justify-center">
-          <div className="mb-8 text-center">
-            <h1 className="text-4xl font-bold mb-2">Piškvorky</h1>
-            <p className="text-lg text-muted-foreground">
-              {winner === 'X' && 'Vyhráli jste! 🎉'}
-              {winner === 'O' && 'Počítač vyhrál! 💻'}
+          <div className="mb-6 text-center">
+            <h1 className="text-4xl font-bold mb-2">Piškvorky 5×5</h1>
+            <p className="text-lg text-muted-foreground mb-2">
+              {winner === 'player' && 'Vyhráli jste! 🎉'}
+              {winner === 'computer' && 'Počítač vyhrál! 💻'}
               {winner === 'draw' && 'Remíza! 🤝'}
-              {!winner && (isPlayerTurn ? 'Vaše tah (X)' : 'Tah počítače (O)...')}
+              {!winner && (isPlayerTurn ? `Vaše tah (${playerSymbol})` : `Tah počítače (${computerSymbol})...`)}
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Cíl: Získejte 4 v řadě
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-3 bg-card p-6 rounded-3xl shadow-2xl">
+          <div className="grid grid-cols-5 gap-2 bg-card p-4 rounded-3xl shadow-2xl max-w-xl">
             {board.map((cell, index) => (
               <button
                 key={index}
                 onClick={() => handleCellClick(index)}
                 disabled={!isPlayerTurn || !!cell || !!winner}
                 className={`
-                  w-24 h-24 
+                  w-16 h-16 sm:w-20 sm:h-20
                   bg-background 
-                  rounded-2xl 
+                  rounded-xl 
                   flex items-center justify-center
-                  text-6xl font-bold
+                  text-4xl sm:text-5xl font-abeezee font-bold
                   transition-all duration-200
                   hover:scale-105 active:scale-95
                   disabled:cursor-not-allowed
                   ${getCellColor(cell)}
                   ${!cell && isPlayerTurn && !winner ? 'hover:bg-accent' : ''}
                 `}
-                aria-label={`Cell ${index + 1}, ${cell || 'empty'}`}
+                aria-label={`Cell ${index + 1}, ${getCellText(cell) || 'empty'}`}
               >
-                {cell}
+                {getCellText(cell)}
               </button>
             ))}
           </div>
@@ -174,7 +258,7 @@ const TicTacToe = () => {
           {winner && (
             <Button
               onClick={handleReset}
-              className="mt-8 h-14 px-8 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful text-lg font-semibold"
+              className="mt-6 h-14 px-8 bg-game-yellow hover:bg-game-yellow/90 text-foreground rounded-2xl shadow-playful text-lg font-semibold"
             >
               Nová hra
             </Button>
