@@ -86,7 +86,9 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
             <span className="text-primary animate-in fade-in duration-300 delay-200">{getOperationSymbol(currentExercise.operation)}</span>
             <span className="animate-in slide-in-from-right duration-500">{currentExercise.operandB}</span>
             <span className="text-primary animate-in fade-in duration-300 delay-200">=</span>
-            <span className="text-muted-foreground animate-in fade-in duration-300 delay-300">?</span>
+            <span className={`animate-in fade-in duration-300 delay-300 ${showSuccess ? 'text-primary' : 'text-muted-foreground'}`}>
+              {showSuccess ? currentExercise.correctAnswer : '?'}
+            </span>
           </div>
         </div>
       </div>

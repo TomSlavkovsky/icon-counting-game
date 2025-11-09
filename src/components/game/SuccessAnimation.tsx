@@ -33,11 +33,14 @@ export const SuccessAnimation = ({ show, result }: SuccessAnimationProps) => {
         width={windowSize.width}
         height={windowSize.height}
         recycle={false}
-        numberOfPieces={Math.max(300, Math.floor(windowSize.width / 3))}
-        gravity={0.2}
-        initialVelocityY={20}
-        colors={['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2']}
-        tweenDuration={3000}
+        numberOfPieces={Math.max(500, Math.floor(windowSize.width / 2))}
+        gravity={0.15}
+        initialVelocityY={30}
+        initialVelocityX={15}
+        colors={['#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E2', '#FF69B4', '#32CD32']}
+        tweenDuration={4000}
+        wind={0.01}
+        opacity={1}
       />
       {result !== undefined && (
         <div className="text-9xl font-bold text-primary animate-in fade-in zoom-in duration-500">
