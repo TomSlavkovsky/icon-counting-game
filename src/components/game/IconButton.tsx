@@ -14,7 +14,8 @@ export const IconButton = ({ type, color, onClick, 'aria-label': ariaLabel }: Ic
     <button
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`min-w-[120px] min-h-[80px] active:scale-95 rounded-2xl shadow-playful transition-all duration-200 flex items-center justify-center font-bold text-4xl hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-white/50 ${colorClass}`}
+      className={`min-w-[120px] min-h-[80px] active:scale-95 rounded-2xl shadow-playful transition-all duration-200 flex items-center justify-center font-bold text-4xl hover:shadow-soft focus:outline-none focus:ring-4 focus:ring-white/50 touch-manipulation select-none ${colorClass}`}
+      style={{ WebkitTapHighlightColor: 'transparent' }}
     >
       {type === 'more' ? 'III' : 'I'}
     </button>

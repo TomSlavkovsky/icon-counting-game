@@ -43,8 +43,14 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 };
 
 const generateAdditionExercise = (maxSum: number): Exercise => {
-  const operandA = Math.floor(Math.random() * (maxSum + 1));
-  const operandB = Math.floor(Math.random() * (maxSum + 1 - operandA));
+  // Reduce frequency of 0s: 20% chance for 0, 80% for other numbers
+  const getWeightedRandom = (max: number) => {
+    if (Math.random() < 0.2) return 0; // 20% chance for 0
+    return Math.floor(Math.random() * max) + 1; // 80% chance for 1 to max
+  };
+  
+  const operandA = Math.random() < 0.8 ? getWeightedRandom(maxSum) : Math.floor(Math.random() * (maxSum + 1));
+  const operandB = Math.random() < 0.8 ? getWeightedRandom(maxSum - operandA) : Math.floor(Math.random() * (maxSum + 1 - operandA));
   const correctAnswer = operandA + operandB;
   
   return {

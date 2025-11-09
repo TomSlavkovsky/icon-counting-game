@@ -38,8 +38,8 @@ export const FillInObject = ({ type, color, onClick, x, y }: FillInObjectProps) 
   return (
     <button
       onClick={onClick}
-      className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus:ring-4 focus:ring-accent/50 rounded-full"
-      style={{ left: `${x}%`, top: `${y}%` }}
+      className="absolute transform -translate-x-1/2 -translate-y-1/2 transition-all duration-300 hover:scale-110 active:scale-95 cursor-pointer focus:outline-none focus:ring-4 focus:ring-accent/50 rounded-full touch-manipulation select-none p-2"
+      style={{ left: `${x}%`, top: `${y}%`, WebkitTapHighlightColor: 'transparent' }}
       aria-label={`${color ? 'Colored' : 'Uncolored'} ${type}`}
     >
       <Icon

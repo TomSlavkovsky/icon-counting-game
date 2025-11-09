@@ -66,8 +66,9 @@ export const Tile = ({ tile, onFlip, onDragStart, onTouchStart, draggable, locke
         ${!locked ? 'cursor-pointer hover:scale-105 active:scale-95' : 'cursor-default'}
         transition-transform duration-200
         ${locked ? 'opacity-75' : ''}
+        touch-manipulation select-none
       `}
-      style={{ touchAction: 'none' }}
+      style={{ touchAction: 'none', WebkitTapHighlightColor: 'transparent' }}
     >
       <div className="text-4xl select-none">{leftSymbol}</div>
       <div className="absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-border" />

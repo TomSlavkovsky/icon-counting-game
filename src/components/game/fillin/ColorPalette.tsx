@@ -21,13 +21,14 @@ export const ColorPalette = ({ colors, selectedColor, onColorSelect }: ColorPale
         <button
           key={color}
           onClick={() => onColorSelect(color)}
-          className={`w-14 h-14 rounded-full ${COLOR_MAP[color]} transition-all duration-200 ${
+          className={`w-14 h-14 rounded-full ${COLOR_MAP[color]} transition-all duration-200 touch-manipulation select-none ${
             selectedColor === color
               ? 'ring-4 ring-offset-2 ring-offset-background ring-primary scale-110 shadow-playful'
               : 'opacity-70 hover:opacity-100 hover:scale-105'
           }`}
           aria-label={`Select ${color} color`}
           aria-pressed={selectedColor === color}
+          style={{ WebkitTapHighlightColor: 'transparent' }}
         />
       ))}
     </div>
