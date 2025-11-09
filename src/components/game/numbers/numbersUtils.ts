@@ -127,10 +127,13 @@ export const generateSession = (levelId: number): Exercise[] => {
   const config = LEVEL_CONFIGS[levelId - 1];
   const exercises: Exercise[] = [];
   const used = new Set<string>();
-  let attempts = 0;
-  const maxAttempts = 100; // Prevent infinite loops
   
-  while (exercises.length < 20 && attempts < maxAttempts) {
+  // For small maxSum values, allow duplicates more easily
+  const allowDuplicates = config.maxSum <= 7;
+  const maxUniqueAttempts = 10; // Try to find unique exercises, but don't get stuck
+  let attempts = 0;
+  
+  while (exercises.length < 20) {
     let exercise: Exercise;
     
     if (config.operation === 'addition') {
@@ -146,16 +149,29 @@ export const generateSession = (levelId: number): Exercise[] => {
     
     // Create unique key to avoid duplicate exercises
     const key = `${exercise.operandA}${exercise.operation}${exercise.operandB}`;
-    if (!used.has(key)) {
-      used.add(key);
-      exercises.push(exercise);
-      attempts = 0; // Reset attempts counter on success
-    } else {
-      attempts++;
-      // After many attempts, allow duplicates to prevent getting stuck
-      if (attempts >= maxAttempts / 2) {
+    
+    if (allowDuplicates) {
+      // For small maxSum, prefer unique but allow duplicates after a few tries
+      if (!used.has(key) || attempts >= maxUniqueAttempts) {
+        used.add(key);
         exercises.push(exercise);
         attempts = 0;
+      } else {
+        attempts++;
+      }
+    } else {
+      // For larger maxSum, enforce uniqueness more strictly
+      if (!used.has(key)) {
+        used.add(key);
+        exercises.push(exercise);
+        attempts = 0;
+      } else {
+        attempts++;
+        // Safety valve: allow duplicates after many attempts to prevent infinite loops
+        if (attempts >= 50) {
+          exercises.push(exercise);
+          attempts = 0;
+        }
       }
     }
   }
