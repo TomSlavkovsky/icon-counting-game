@@ -21,7 +21,7 @@ const SudokuGame = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState<SudokuSymbol | null>(null);
   
-  const [symbolMode, setSymbolMode] = useState<SymbolMode>('shapes');
+  const [symbolMode, setSymbolMode] = useState<SymbolMode>('digits');
   const [difficulty, setDifficulty] = useState<Difficulty>('starter');
   const [errorHighlights] = useState(true);
   
