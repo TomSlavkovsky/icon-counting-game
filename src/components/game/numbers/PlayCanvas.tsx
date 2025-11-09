@@ -65,7 +65,7 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
         } else {
           onComplete(score);
         }
-      }, 1000);
+      }, 1500);
     }
   };
 
@@ -99,6 +99,7 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
           const isSelected = selectedAnswer === option;
           const isCorrectAnswer = option === currentExercise.correctAnswer;
           const showWrong = isWrong && isSelected && !isCorrectAnswer;
+          const showCorrect = isWrong && isCorrectAnswer;
 
           return (
             <button
@@ -111,6 +112,8 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
                 ${
                   showWrong
                     ? 'bg-destructive text-destructive-foreground animate-pulse'
+                    : showCorrect
+                    ? 'bg-green-500 text-white'
                     : 'bg-card text-foreground hover:bg-card/80 active:scale-95'
                 }
                 disabled:cursor-not-allowed
