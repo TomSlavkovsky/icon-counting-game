@@ -96,10 +96,9 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
     <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4 gap-8">
       <SuccessAnimation show={showSuccess} />
       
-      {/* Exercise Box */}
+      {/* Equation Box */}
       <div className="bg-card rounded-3xl shadow-playful p-8 sm:p-12 w-full">
-        {/* Equation */}
-        <div className="text-center mb-8">
+        <div className="text-center">
           <div className="text-6xl sm:text-8xl font-bold text-foreground flex items-center gap-4 justify-center">
             <span>{currentExercise.operandA}</span>
             <span className="text-primary">{getOperationSymbol(currentExercise.operation)}</span>
@@ -108,9 +107,10 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
             <span className="text-muted-foreground">?</span>
           </div>
         </div>
+      </div>
 
-        {/* Answer options (2×2 grid) */}
-        <div className="grid grid-cols-2 gap-4 w-full max-w-md mx-auto">
+      {/* Answer options (2×2 grid) */}
+      <div className="grid grid-cols-2 gap-4 w-full max-w-md mx-auto">
         {currentExercise.options.map((option, index) => {
           const isSelected = selectedAnswer === option;
           const isCorrectAnswer = option === currentExercise.correctAnswer;
@@ -136,14 +136,13 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
             </button>
           );
         })}
-        </div>
-
-        {isWrong && (
-          <div className="text-xl font-semibold text-destructive animate-in fade-in text-center mt-4">
-            Wrong answer
-          </div>
-        )}
       </div>
+
+      {isWrong && (
+        <div className="text-xl font-semibold text-destructive animate-in fade-in text-center">
+          Wrong answer
+        </div>
+      )}
     </div>
   );
 };
