@@ -25,7 +25,7 @@ const getRandomBackground = (exclude?: string): string => {
 
 const AddUpSubtractGame = () => {
   const navigate = useNavigate();
-  const { soundEnabled } = useSettings();
+  const { soundEnabled, toggleSound } = useSettings();
   const [gameState, setGameState] = useState<GameState>('menu');
   const [currentLevel, setCurrentLevel] = useState<number | null>(null);
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -102,19 +102,10 @@ const AddUpSubtractGame = () => {
         <GameLayout
           score={0}
           muted={!soundEnabled}
-          onToggleMute={() => {}}
+          onToggleMute={toggleSound}
           onReset={handleReset}
           showScore={false}
           transparentBackground={true}
-          topRightControls={
-            <button
-              onClick={() => navigate('/')}
-              className="p-4 bg-card hover:bg-card/80 rounded-full shadow-soft transition-all duration-200 active:scale-95"
-              aria-label="Back to hub"
-            >
-              <ArrowLeft size={24} />
-            </button>
-          }
         >
           {gameState === 'menu' && (
             <LevelSelector onSelectLevel={handleSelectLevel} />

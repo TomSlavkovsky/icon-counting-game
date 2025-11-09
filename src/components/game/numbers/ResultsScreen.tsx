@@ -15,7 +15,7 @@ export const ResultsScreen = ({
   onBackToMenu,
 }: ResultsScreenProps) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-8 p-8 max-w-md mx-auto">
+    <div className="flex flex-col items-center justify-center gap-8 p-8 max-w-md mx-auto bg-card/90 backdrop-blur-sm rounded-3xl shadow-playful">
       <h2 className="text-4xl font-bold text-foreground">Level Complete!</h2>
       
       <div className="text-6xl font-bold text-primary">{score}/20</div>

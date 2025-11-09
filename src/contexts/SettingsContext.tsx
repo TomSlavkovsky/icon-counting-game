@@ -11,6 +11,7 @@ interface SettingsContextType {
   setShowSameTasks: (value: boolean) => void;
   soundEnabled: boolean;
   setSoundEnabled: (value: boolean) => void;
+  toggleSound: () => void;
   teacherMode: boolean;
   setTeacherMode: (value: boolean) => void;
   paletteSize: number;
@@ -44,6 +45,8 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
   const [skrtniAllowZero, setSkrtniAllowZero] = useState(false);
   const [skrtniEnableColoring, setSkrtniEnableColoring] = useState(false);
 
+  const toggleSound = () => setSoundEnabled(prev => !prev);
+
   return (
     <SettingsContext.Provider
       value={{
@@ -55,6 +58,7 @@ export const SettingsProvider = ({ children }: { children: ReactNode }) => {
         setShowSameTasks,
         soundEnabled,
         setSoundEnabled,
+        toggleSound,
         teacherMode,
         setTeacherMode,
         paletteSize,
