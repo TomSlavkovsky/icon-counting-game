@@ -7,11 +7,12 @@ interface SlotProps {
   onDrop: (e: React.DragEvent) => void;
   onFlip: () => void;
   onDragStart: (e: React.DragEvent) => void;
+  onTouchStart?: (e: React.TouchEvent) => void;
   highlight?: 'green' | 'red' | null;
   locked?: boolean;
 }
 
-export const Slot = ({ slotIndex, tile, onDrop, onFlip, onDragStart, highlight, locked }: SlotProps) => {
+export const Slot = ({ slotIndex, tile, onDrop, onFlip, onDragStart, onTouchStart, highlight, locked }: SlotProps) => {
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
   };
@@ -19,6 +20,7 @@ export const Slot = ({ slotIndex, tile, onDrop, onFlip, onDragStart, highlight, 
   return (
     <div className="relative">
       <div
+        data-slot-index={slotIndex}
         onDrop={onDrop}
         onDragOver={handleDragOver}
         className={`
@@ -35,6 +37,7 @@ export const Slot = ({ slotIndex, tile, onDrop, onFlip, onDragStart, highlight, 
             tile={tile}
             onFlip={onFlip}
             onDragStart={onDragStart}
+            onTouchStart={onTouchStart}
             draggable={true}
             locked={locked}
           />

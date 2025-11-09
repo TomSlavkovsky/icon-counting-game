@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { GameLayout } from '@/components/game/GameLayout';
 import { Slot } from '@/components/game/stonematch/Slot';
 import { Tile } from '@/components/game/stonematch/Tile';
@@ -26,6 +26,8 @@ const StoneMatchGame = () => {
   const [seamHighlights, setSeamHighlights] = useState<(null | 'green' | 'red')[]>([null, null]);
   const [attempts, setAttempts] = useState(0);
   const [startTime, setStartTime] = useState<number>(Date.now());
+  const [touchDragData, setTouchDragData] = useState<{ tile: TileType; from: 'slot' | 'available'; index: number; offsetX: number; offsetY: number } | null>(null);
+  const dragPreviewRef = useRef<HTMLDivElement>(null);
 
   const initializeLevel = (isDemo: boolean = true) => {
     console.log('stone_match_started', { timestamp: Date.now() });
@@ -44,34 +46,92 @@ const StoneMatchGame = () => {
     initializeLevel(true);
   }, []);
 
-  const handleDragStart = (tile: TileType, from: 'slot' | 'available', index: number) => {
+  const handleDragStart = (tile: TileType, from: 'slot' | 'available', index: number, e?: React.DragEvent | React.TouchEvent) => {
     setDraggedTile({ tile, from, index });
     playSound('pick', muted);
+    
+    if (e && 'dataTransfer' in e) {
+      e.dataTransfer.effectAllowed = 'move';
+    }
   };
 
-  const handleDropOnSlot = (slotIndex: number) => {
-    if (!draggedTile || locked) return;
+  const handleTouchStart = (tile: TileType, from: 'slot' | 'available', index: number, e: React.TouchEvent) => {
+    if (locked) return;
+    
+    const touch = e.touches[0];
+    const rect = e.currentTarget.getBoundingClientRect();
+    
+    setTouchDragData({
+      tile,
+      from,
+      index,
+      offsetX: touch.clientX - rect.left,
+      offsetY: touch.clientY - rect.top,
+    });
+    
+    playSound('pick', muted);
+    e.preventDefault();
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchDragData || !dragPreviewRef.current) return;
+    
+    const touch = e.touches[0];
+    const preview = dragPreviewRef.current;
+    
+    preview.style.left = `${touch.clientX - touchDragData.offsetX}px`;
+    preview.style.top = `${touch.clientY - touchDragData.offsetY}px`;
+    
+    e.preventDefault();
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (!touchDragData) return;
+    
+    const touch = e.changedTouches[0];
+    const elements = document.elementsFromPoint(touch.clientX, touch.clientY);
+    
+    // Find if we dropped on a slot
+    let targetSlotIndex = -1;
+    elements.forEach((el) => {
+      const slotAttr = el.getAttribute('data-slot-index');
+      if (slotAttr !== null) {
+        targetSlotIndex = parseInt(slotAttr, 10);
+      }
+    });
+    
+    if (targetSlotIndex !== -1) {
+      handleDropOnSlot(targetSlotIndex, touchDragData);
+    }
+    
+    setTouchDragData(null);
+    e.preventDefault();
+  };
+
+  const handleDropOnSlot = (slotIndex: number, dragData?: typeof draggedTile) => {
+    const activeDragData = dragData || draggedTile;
+    if (!activeDragData || locked) return;
 
     playSound('drop', muted);
 
     const newSlots = [...slots];
     const newAvailableTiles = [...availableTiles];
 
-    if (draggedTile.from === 'available') {
+    if (activeDragData.from === 'available') {
       // Move from available to slot
       const existingTile = newSlots[slotIndex];
-      newSlots[slotIndex] = draggedTile.tile;
-      newAvailableTiles.splice(draggedTile.index, 1);
+      newSlots[slotIndex] = activeDragData.tile;
+      newAvailableTiles.splice(activeDragData.index, 1);
       
       // If slot was occupied, return tile to available
       if (existingTile) {
         newAvailableTiles.push(existingTile);
       }
-    } else if (draggedTile.from === 'slot') {
+    } else if (activeDragData.from === 'slot') {
       // Swap tiles between slots
       const temp = newSlots[slotIndex];
-      newSlots[slotIndex] = newSlots[draggedTile.index];
-      newSlots[draggedTile.index] = temp;
+      newSlots[slotIndex] = newSlots[activeDragData.index];
+      newSlots[activeDragData.index] = temp;
     }
 
     setSlots(newSlots);
@@ -151,7 +211,30 @@ const StoneMatchGame = () => {
       onReset={handleReset}
       showScore={true}
     >
-      <div className="flex flex-col items-center gap-8">
+      <div 
+        className="flex flex-col items-center gap-8"
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Touch drag preview */}
+        {touchDragData && (
+          <div
+            ref={dragPreviewRef}
+            className="fixed pointer-events-none z-50 opacity-80"
+            style={{ touchAction: 'none' }}
+          >
+            <div className="relative w-32 h-20 bg-card border-4 border-primary rounded-xl shadow-playful flex items-center justify-between px-4">
+              <div className="text-4xl select-none">
+                {touchDragData.tile.flipped ? touchDragData.tile.rightSymbol : touchDragData.tile.leftSymbol}
+              </div>
+              <div className="absolute left-1/2 -translate-x-1/2 w-0.5 h-full bg-border" />
+              <div className="text-4xl select-none">
+                {touchDragData.tile.flipped ? touchDragData.tile.leftSymbol : touchDragData.tile.rightSymbol}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Slots */}
         <div className="flex items-center gap-6">
           {slots.map((tile, index) => (
@@ -161,7 +244,8 @@ const StoneMatchGame = () => {
               tile={tile}
               onDrop={() => handleDropOnSlot(index)}
               onFlip={() => handleFlipInSlot(index)}
-              onDragStart={(e) => tile && handleDragStart(tile, 'slot', index)}
+              onDragStart={(e) => tile && handleDragStart(tile, 'slot', index, e)}
+              onTouchStart={(e) => tile && handleTouchStart(tile, 'slot', index, e)}
               highlight={seamHighlights[index]}
               locked={locked}
             />
@@ -199,7 +283,8 @@ const StoneMatchGame = () => {
               key={tile.id}
               tile={tile}
               onFlip={() => handleFlipAvailable(index)}
-              onDragStart={(e) => handleDragStart(tile, 'available', index)}
+              onDragStart={(e) => handleDragStart(tile, 'available', index, e)}
+              onTouchStart={(e) => handleTouchStart(tile, 'available', index, e)}
               draggable={true}
               locked={locked}
             />
