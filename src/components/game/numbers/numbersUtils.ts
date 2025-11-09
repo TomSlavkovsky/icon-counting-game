@@ -127,8 +127,10 @@ export const generateSession = (levelId: number): Exercise[] => {
   const config = LEVEL_CONFIGS[levelId - 1];
   const exercises: Exercise[] = [];
   const used = new Set<string>();
+  let attempts = 0;
+  const maxAttempts = 100; // Prevent infinite loops
   
-  while (exercises.length < 20) {
+  while (exercises.length < 20 && attempts < maxAttempts) {
     let exercise: Exercise;
     
     if (config.operation === 'addition') {
@@ -147,6 +149,14 @@ export const generateSession = (levelId: number): Exercise[] => {
     if (!used.has(key)) {
       used.add(key);
       exercises.push(exercise);
+      attempts = 0; // Reset attempts counter on success
+    } else {
+      attempts++;
+      // After many attempts, allow duplicates to prevent getting stuck
+      if (attempts >= maxAttempts / 2) {
+        exercises.push(exercise);
+        attempts = 0;
+      }
     }
   }
   
