@@ -81,18 +81,13 @@ const AddUpSubtractGame = () => {
       onReset={handleReset}
       showScore={false}
       topRightControls={
-        <>
-          {gameState === 'playing' && (
-            <ProgressIndicator current={currentExerciseIndex + 1} total={exercises.length} />
-          )}
-          <button
-            onClick={() => navigate('/')}
-            className="p-4 bg-card hover:bg-card/80 rounded-full shadow-soft transition-all duration-200 active:scale-95"
-            aria-label="Back to hub"
-          >
-            <ArrowLeft size={24} />
-          </button>
-        </>
+        <button
+          onClick={() => navigate('/')}
+          className="p-4 bg-card hover:bg-card/80 rounded-full shadow-soft transition-all duration-200 active:scale-95"
+          aria-label="Back to hub"
+        >
+          <ArrowLeft size={24} />
+        </button>
       }
     >
       {gameState === 'menu' && (
@@ -105,6 +100,7 @@ const AddUpSubtractGame = () => {
           onComplete={handleComplete}
           onProgressChange={setCurrentExerciseIndex}
           soundEnabled={soundEnabled}
+          currentIndex={currentExerciseIndex}
         />
       )}
       

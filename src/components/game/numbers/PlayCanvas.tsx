@@ -1,15 +1,17 @@
 import { useState } from 'react';
 import { Exercise, getOperationSymbol } from './numbersUtils';
 import { SuccessAnimation } from '../SuccessAnimation';
+import { ProgressIndicator } from '../ProgressIndicator';
 
 interface PlayCanvasProps {
   exercises: Exercise[];
   onComplete: (score: number) => void;
   onProgressChange: (index: number) => void;
   soundEnabled: boolean;
+  currentIndex: number;
 }
 
-export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabled }: PlayCanvasProps) => {
+export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabled, currentIndex: externalIndex }: PlayCanvasProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -96,15 +98,20 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
     <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4 gap-8">
       <SuccessAnimation show={showSuccess} />
       
+      {/* Progress Indicator */}
+      <div className="w-full flex justify-center">
+        <ProgressIndicator current={externalIndex + 1} total={exercises.length} />
+      </div>
+      
       {/* Equation Box */}
-      <div className="bg-card rounded-3xl shadow-playful p-8 sm:p-12 w-full">
+      <div key={currentIndex} className="bg-card rounded-3xl shadow-playful p-8 sm:p-12 w-full">
         <div className="text-center">
           <div className="text-6xl sm:text-8xl font-bold text-foreground flex items-center gap-4 justify-center">
-            <span>{currentExercise.operandA}</span>
-            <span className="text-primary">{getOperationSymbol(currentExercise.operation)}</span>
-            <span>{currentExercise.operandB}</span>
-            <span className="text-primary">=</span>
-            <span className="text-muted-foreground">?</span>
+            <span className="animate-in slide-in-from-left duration-500">{currentExercise.operandA}</span>
+            <span className="text-primary animate-in fade-in duration-300 delay-200">{getOperationSymbol(currentExercise.operation)}</span>
+            <span className="animate-in slide-in-from-right duration-500">{currentExercise.operandB}</span>
+            <span className="text-primary animate-in fade-in duration-300 delay-200">=</span>
+            <span className="text-muted-foreground animate-in fade-in duration-300 delay-300">?</span>
           </div>
         </div>
       </div>
