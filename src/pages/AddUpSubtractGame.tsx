@@ -105,6 +105,7 @@ const AddUpSubtractGame = () => {
           onToggleMute={() => {}}
           onReset={handleReset}
           showScore={false}
+          transparentBackground={true}
           topRightControls={
             <button
               onClick={() => navigate('/')}

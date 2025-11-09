@@ -12,6 +12,7 @@ interface GameLayoutProps {
   topRightControls?: ReactNode;
   bottomRightControls?: ReactNode;
   showScore?: boolean;
+  transparentBackground?: boolean;
 }
 
 export const GameLayout = ({
@@ -24,9 +25,10 @@ export const GameLayout = ({
   topRightControls,
   bottomRightControls,
   showScore = true,
+  transparentBackground = false,
 }: GameLayoutProps) => {
   return (
-    <div className="h-screen overflow-hidden bg-background flex flex-col items-center p-4">
+    <div className={`h-screen overflow-hidden flex flex-col items-center p-4 ${transparentBackground ? '' : 'bg-background'}`}>
       {/* Top bar with controls */}
       <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
         <GameHeader
