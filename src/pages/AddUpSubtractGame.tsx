@@ -16,6 +16,13 @@ import type { Exercise } from '@/components/game/numbers/types';
 
 type GameState = 'menu' | 'playing' | 'results';
 
+const BACKGROUND_IMAGES = ['001', '002', '003', '004'];
+
+const getRandomBackground = (exclude?: string): string => {
+  const available = BACKGROUND_IMAGES.filter(img => img !== exclude);
+  return available[Math.floor(Math.random() * available.length)];
+};
+
 const AddUpSubtractGame = () => {
   const navigate = useNavigate();
   const { soundEnabled } = useSettings();
@@ -26,6 +33,7 @@ const AddUpSubtractGame = () => {
   const [finalScore, setFinalScore] = useState(0);
   const [earnedStars, setEarnedStars] = useState(0);
   const [startTime, setStartTime] = useState<number>(0);
+  const [backgroundImage, setBackgroundImage] = useState<string>(() => getRandomBackground());
 
   const handleSelectLevel = (levelId: number) => {
     console.log('numbers_game_started', { levelId });
@@ -34,6 +42,7 @@ const AddUpSubtractGame = () => {
     setCurrentExerciseIndex(0);
     setStartTime(Date.now());
     setGameState('playing');
+    setBackgroundImage(prev => getRandomBackground(prev));
   };
 
   const handleComplete = (score: number) => {
@@ -65,6 +74,7 @@ const AddUpSubtractGame = () => {
   const handleBackToMenu = () => {
     setGameState('menu');
     setCurrentLevel(null);
+    setBackgroundImage(prev => getRandomBackground(prev));
   };
 
   const handleReset = () => {
@@ -74,45 +84,62 @@ const AddUpSubtractGame = () => {
   };
 
   return (
-    <GameLayout
-      score={0}
-      muted={!soundEnabled}
-      onToggleMute={() => {}}
-      onReset={handleReset}
-      showScore={false}
-      topRightControls={
-        <button
-          onClick={() => navigate('/')}
-          className="p-4 bg-card hover:bg-card/80 rounded-full shadow-soft transition-all duration-200 active:scale-95"
-          aria-label="Back to hub"
+    <div className="min-h-screen relative overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-1000"
+        style={{
+          backgroundImage: `url(https://images-fo.b-cdn.net/b/${backgroundImage}.png)`,
+          zIndex: 0,
+        }}
+      />
+      
+      {/* Overlay for better content readability */}
+      <div className="absolute inset-0 bg-background/30 backdrop-blur-[2px]" style={{ zIndex: 1 }} />
+      
+      {/* Content */}
+      <div className="relative" style={{ zIndex: 2 }}>
+        <GameLayout
+          score={0}
+          muted={!soundEnabled}
+          onToggleMute={() => {}}
+          onReset={handleReset}
+          showScore={false}
+          topRightControls={
+            <button
+              onClick={() => navigate('/')}
+              className="p-4 bg-card hover:bg-card/80 rounded-full shadow-soft transition-all duration-200 active:scale-95"
+              aria-label="Back to hub"
+            >
+              <ArrowLeft size={24} />
+            </button>
+          }
         >
-          <ArrowLeft size={24} />
-        </button>
-      }
-    >
-      {gameState === 'menu' && (
-        <LevelSelector onSelectLevel={handleSelectLevel} />
-      )}
-      
-      {gameState === 'playing' && exercises.length > 0 && (
-        <PlayCanvas
-          exercises={exercises}
-          onComplete={handleComplete}
-          onProgressChange={setCurrentExerciseIndex}
-          soundEnabled={soundEnabled}
-          currentIndex={currentExerciseIndex}
-        />
-      )}
-      
-      {gameState === 'results' && (
-        <ResultsScreen
-          score={finalScore}
-          stars={earnedStars}
-          onPlayAgain={handlePlayAgain}
-          onBackToMenu={handleBackToMenu}
-        />
-      )}
-    </GameLayout>
+          {gameState === 'menu' && (
+            <LevelSelector onSelectLevel={handleSelectLevel} />
+          )}
+          
+          {gameState === 'playing' && exercises.length > 0 && (
+            <PlayCanvas
+              exercises={exercises}
+              onComplete={handleComplete}
+              onProgressChange={setCurrentExerciseIndex}
+              soundEnabled={soundEnabled}
+              currentIndex={currentExerciseIndex}
+            />
+          )}
+          
+          {gameState === 'results' && (
+            <ResultsScreen
+              score={finalScore}
+              stars={earnedStars}
+              onPlayAgain={handlePlayAgain}
+              onBackToMenu={handleBackToMenu}
+            />
+          )}
+        </GameLayout>
+      </div>
+    </div>
   );
 };
 
