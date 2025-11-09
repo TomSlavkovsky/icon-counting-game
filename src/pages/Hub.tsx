@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { SettingsDialog } from '@/components/settings/SettingsDialog';
 import { useState } from 'react';
 
-const mathGames = [
+const symbolGames = [
   {
     id: 'fill-in',
     title: 'Doplň',
@@ -57,6 +57,19 @@ const mathGames = [
   },
 ];
 
+const numberGames = [
+  {
+    id: 'addupsubtract',
+    title: 'Sečti a Odečti',
+    subtitle: 'Add Up & Subtract',
+    description: 'Practice addition and subtraction with numbers',
+    color: 'bg-game-green',
+    textColor: 'text-game-green',
+    path: '/game/addupsubtract',
+    enabled: true,
+  },
+];
+
 const playGames = [
   {
     id: 'tictactoe',
@@ -103,13 +116,55 @@ const Hub = () => {
         </div>
       </div>
 
-      {/* Math Games Grid */}
+      {/* Math games with symbols section */}
+      <div className="w-full max-w-6xl mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-8">Math games with symbols</h2>
+      </div>
+
       <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
-        {mathGames.map((game, index) => (
+        {symbolGames.map((game, index) => (
           <div
             key={game.id}
             className="animate-slide-up"
             style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            {game.enabled ? (
+              <Link to={game.path}>
+                <div className="bg-card rounded-3xl p-8 shadow-soft hover:shadow-playful transition-all duration-300 hover:scale-105 cursor-pointer border-4 border-transparent hover:border-current">
+                  <div className={`w-20 h-20 ${game.color} rounded-2xl mb-6 mx-auto`} />
+                  <h2 className={`text-2xl font-bold mb-2 ${game.textColor}`}>
+                    {game.title}
+                  </h2>
+                  <p className="text-lg text-muted-foreground mb-3">{game.subtitle}</p>
+                  <p className="text-foreground/70">{game.description}</p>
+                </div>
+              </Link>
+            ) : (
+              <div className="bg-card rounded-3xl p-8 shadow-soft border-4 border-dashed border-muted opacity-60">
+                <div className={`w-20 h-20 ${game.color} rounded-2xl mb-6 mx-auto opacity-50`} />
+                <h2 className={`text-2xl font-bold mb-2 ${game.textColor}`}>
+                  {game.title}
+                </h2>
+                <p className="text-lg text-muted-foreground mb-3">{game.subtitle}</p>
+                <p className="text-foreground/70">{game.description}</p>
+                <p className="text-sm text-muted-foreground mt-4 italic">Coming soon...</p>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {/* Math games with numbers section */}
+      <div className="w-full max-w-6xl mb-12">
+        <h2 className="text-3xl md:text-4xl font-bold text-primary mb-8">Math games with numbers</h2>
+      </div>
+
+      <div className="w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-16">
+        {numberGames.map((game, index) => (
+          <div
+            key={game.id}
+            className="animate-slide-up"
+            style={{ animationDelay: `${(symbolGames.length + index) * 0.1}s` }}
           >
             {game.enabled ? (
               <Link to={game.path}>
@@ -148,7 +203,7 @@ const Hub = () => {
           <div
             key={game.id}
             className="animate-slide-up"
-            style={{ animationDelay: `${(mathGames.length + index) * 0.1}s` }}
+            style={{ animationDelay: `${(symbolGames.length + numberGames.length + index) * 0.1}s` }}
           >
             {game.enabled ? (
               <Link to={game.path}>
