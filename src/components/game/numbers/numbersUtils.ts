@@ -3,9 +3,15 @@ import { Exercise, Operation, LevelConfig } from './types';
 export type { Exercise, Operation };
 
 export const LEVEL_CONFIGS: LevelConfig[] = [
-  // Boxes 1-5: Addition only, sums ≤10
-  ...Array.from({ length: 5 }, (_, i) => ({
-    id: i + 1,
+  // Level 1: max number 4
+  { id: 1, operation: 'addition' as const, maxSum: 4, locked: false },
+  // Level 2: max number 6
+  { id: 2, operation: 'addition' as const, maxSum: 6, locked: false },
+  // Level 3: max number 7
+  { id: 3, operation: 'addition' as const, maxSum: 7, locked: false },
+  // Levels 4-5: Addition, maxSum 10
+  ...Array.from({ length: 2 }, (_, i) => ({
+    id: i + 4,
     operation: 'addition' as const,
     maxSum: 10,
     locked: false,
