@@ -73,8 +73,8 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
     <div className="flex flex-col items-center justify-center w-full h-full px-4 gap-4 md:gap-6">
       <SuccessAnimation show={showSuccess} />
       
-      {/* Progress Indicator - Centered at top */}
-      <div className="absolute top-8 left-1/2 -translate-x-1/2">
+      {/* Progress Indicator - Aligned with other controls */}
+      <div className="absolute top-4 left-1/2 -translate-x-1/2">
         <ProgressIndicator current={externalIndex + 1} total={exercises.length} />
       </div>
       

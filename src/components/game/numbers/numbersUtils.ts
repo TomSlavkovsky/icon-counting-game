@@ -63,8 +63,20 @@ const generateAdditionExercise = (maxSum: number): Exercise => {
 };
 
 const generateSubtractionExercise = (maxSum: number): Exercise => {
-  const operandA = Math.floor(Math.random() * (maxSum + 1));
-  const operandB = Math.floor(Math.random() * (operandA + 1));
+  // Ensure operandA is at least 1 to avoid 0-0=0
+  const operandA = Math.floor(Math.random() * maxSum) + 1;
+  
+  // Ensure operandB is at least 1 (to avoid x-0=x) and less than operandA (to avoid x-x=0)
+  // But still allow a 10% chance for operandB to be 0 or equal to operandA for variety
+  let operandB: number;
+  if (Math.random() < 0.1 || operandA === 1) {
+    // 10% chance: allow any value including 0 and operandA
+    operandB = Math.floor(Math.random() * (operandA + 1));
+  } else {
+    // 90% chance: avoid 0 and operandA
+    operandB = Math.floor(Math.random() * (operandA - 1)) + 1;
+  }
+  
   const correctAnswer = operandA - operandB;
   
   return {
