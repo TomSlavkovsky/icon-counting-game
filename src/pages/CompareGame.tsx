@@ -3,8 +3,10 @@ import { GameTask, ColorChoice } from '@/components/game/types';
 import { GameField } from '@/components/game/GameField';
 import { ColorSelector } from '@/components/game/ColorSelector';
 import { GameLayout } from '@/components/game/GameLayout';
-import { generateTask, checkAnswer, playSound } from '@/components/game/gameUtils';
+import { generateTask, checkAnswer } from '@/components/game/gameUtils';
 import { useSettings } from '@/contexts/SettingsContext';
+import { SuccessAnimation } from '@/components/game/SuccessAnimation';
+import { useGameSuccess } from '@/hooks/useGameSuccess';
 
 const CompareGame = () => {
   const { soundEnabled, setSoundEnabled } = useSettings();
@@ -12,6 +14,16 @@ const CompareGame = () => {
   const [selectedColor, setSelectedColor] = useState<ColorChoice>('blue');
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<{ field: 'left' | 'right'; type: 'correct' | 'incorrect' } | null>(null);
+
+  const handleNextTask = useCallback(() => {
+    setTask(generateTask());
+    setFeedback(null);
+  }, []);
+
+  const { showSuccess, triggerSuccess, triggerError } = useGameSuccess({
+    onSuccess: handleNextTask,
+    successDelay: 1500,
+  });
 
   const handleObjectClick = useCallback(
     (fieldId: 'left' | 'right', objectId: string) => {
@@ -46,31 +58,19 @@ const CompareGame = () => {
 
       if (isCorrect) {
         setScore((prev) => prev + 1);
-        playSound('correct', !soundEnabled);
         setFeedback({ field: fieldId, type: 'correct' });
-        
-        // Auto-advance to next task after celebration
-        setTimeout(() => {
-          setFeedback(null);
-          setTask(generateTask());
-        }, 1500);
+        triggerSuccess();
       } else {
-        playSound('incorrect', !soundEnabled);
+        triggerError();
         setFeedback({ field: fieldId, type: 'incorrect' });
         
-        // Clear feedback after animation
         setTimeout(() => {
           setFeedback(null);
         }, 1000);
       }
     },
-    [task, soundEnabled]
+    [task, triggerSuccess, triggerError]
   );
-
-  const handleNextTask = useCallback(() => {
-    setTask(generateTask());
-    setFeedback(null);
-  }, []);
 
   return (
     <GameLayout
@@ -99,6 +99,8 @@ const CompareGame = () => {
           />
         </div>
       </div>
+
+      <SuccessAnimation show={showSuccess} showTada={true} />
     </GameLayout>
   );
 };

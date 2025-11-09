@@ -6,6 +6,8 @@ import { Tile as TileType } from '@/components/game/stonematch/types';
 import { useSettings } from '@/contexts/SettingsContext';
 import { Button } from '@/components/ui/button';
 import { playSound } from '@/lib/sounds';
+import { SuccessAnimation } from '@/components/game/SuccessAnimation';
+import { useGameSuccess } from '@/hooks/useGameSuccess';
 import {
   createDemoLevel,
   generateRandomLevel,
@@ -28,6 +30,10 @@ const StoneMatchGame = () => {
   const [startTime, setStartTime] = useState<number>(Date.now());
   const [touchDragData, setTouchDragData] = useState<{ tile: TileType; from: 'slot' | 'available'; index: number; offsetX: number; offsetY: number } | null>(null);
   const dragPreviewRef = useRef<HTMLDivElement>(null);
+
+  const { showSuccess, triggerSuccess, triggerError } = useGameSuccess({
+    successDelay: 1500,
+  });
 
   const initializeLevel = (isDemo: boolean = true) => {
     console.log('stone_match_started', { timestamp: Date.now() });
@@ -169,27 +175,24 @@ const StoneMatchGame = () => {
     }
 
     if (result.valid) {
-      // Success!
       setMessage('Výborně! Pokračuj.');
       setLocked(true);
       setSeamHighlights(['green', 'green']);
-      playSound('ok', muted);
       setScore((prev) => prev + 1);
+      triggerSuccess();
       
       const timeToComplete = Date.now() - startTime;
       console.log('stone_match_completed', { attempts: attempts + 1, timeToComplete });
     } else {
-      // Mismatch
       setMessage('Zkus jiné pořadí.');
       const highlights: (null | 'red')[] = [null, null];
       result.mismatches.forEach((seam) => {
         highlights[seam] = 'red';
       });
       setSeamHighlights(highlights);
-      playSound('error', muted);
+      triggerError();
       console.log('stone_match_checked', { result: 'fail', attempts: attempts + 1, mismatches: result.mismatches });
 
-      // Clear red highlights after animation
       setTimeout(() => setSeamHighlights([null, null]), 1000);
     }
   };
@@ -291,6 +294,8 @@ const StoneMatchGame = () => {
           ))}
         </div>
       </div>
+
+      <SuccessAnimation show={showSuccess} showTada={true} />
     </GameLayout>
   );
 };

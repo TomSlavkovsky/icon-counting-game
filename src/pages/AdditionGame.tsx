@@ -2,12 +2,13 @@ import { useState, useEffect } from 'react';
 import { Eraser, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/contexts/SettingsContext';
-import { generateTask, checkAnswer, playSound } from '@/components/game/addition/additionUtils';
+import { generateTask, checkAnswer } from '@/components/game/addition/additionUtils';
 import { AdditionTask, AdditionObject } from '@/components/game/addition/types';
 import { AdditionTallyBox } from '@/components/game/addition/AdditionTallyBox';
 import { AdditionObjectBox } from '@/components/game/addition/AdditionObjectBox';
 import { SuccessAnimation } from '@/components/game/SuccessAnimation';
 import { GameLayout } from '@/components/game/GameLayout';
+import { useGameSuccess } from '@/hooks/useGameSuccess';
 
 const AdditionGame = () => {
   const { maxNumber, soundEnabled, teacherMode, objectSets } = useSettings();
@@ -21,7 +22,6 @@ const AdditionGame = () => {
   const [muted, setMuted] = useState(!soundEnabled);
   const [showMismatch, setShowMismatch] = useState(false);
   const [mismatchedBoxIndex, setMismatchedBoxIndex] = useState<number | undefined>();
-  const [showSuccessAnimation, setShowSuccessAnimation] = useState(false);
 
   useEffect(() => {
     setMuted(!soundEnabled);
@@ -33,8 +33,11 @@ const AdditionGame = () => {
     setTask(newTask);
     setShowMismatch(false);
     setMismatchedBoxIndex(undefined);
-    setShowSuccessAnimation(false);
   };
+  
+  const { showSuccess, triggerSuccess, triggerError } = useGameSuccess({
+    onSuccess: generateNewTask,
+  });
 
   useEffect(() => {
     generateNewTask();
@@ -95,14 +98,10 @@ const AdditionGame = () => {
     const { correct, mismatchedBoxIndex: mismatch } = checkAnswer(task);
     
     if (correct) {
-      playSound(true, soundEnabled);
       setScore(score + 1);
-      setShowSuccessAnimation(true);
-      setTimeout(() => {
-        generateNewTask();
-      }, 800);
+      triggerSuccess();
     } else {
-      playSound(false, soundEnabled);
+      triggerError();
       setShowMismatch(true);
       setMismatchedBoxIndex(mismatch);
       setTimeout(() => {
@@ -196,9 +195,8 @@ const AdditionGame = () => {
         </div>
       </div>
 
-      {/* Success Animation */}
       <SuccessAnimation 
-        show={showSuccessAnimation} 
+        show={showSuccess} 
         result={task.targetSum}
         showTada={true}
       />
