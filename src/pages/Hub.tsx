@@ -36,6 +36,16 @@ const mathGames = [
     enabled: true,
   },
   {
+    id: 'stonematch',
+    title: 'Kameny',
+    subtitle: 'StoneMatch',
+    description: 'Arrange domino tiles to match adjacent symbols',
+    color: 'bg-game-yellow',
+    textColor: 'text-game-yellow',
+    path: '/game/stonematch',
+    enabled: true,
+  },
+  {
     id: 'addition',
     title: 'Sečti',
     subtitle: 'Addition',
