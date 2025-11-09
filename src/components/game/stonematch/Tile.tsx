@@ -45,6 +45,7 @@ export const Tile = ({ tile, onFlip, onDragStart, onTouchStart, draggable, locke
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (!isDragging && touchStartPos.current) {
       // It was a tap, not a drag - flip the tile
+      e.preventDefault(); // Prevent click event from firing
       onFlip();
     }
     touchStartPos.current = null;
