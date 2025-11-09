@@ -5,6 +5,7 @@ import { GameLayout } from '@/components/game/GameLayout';
 import { LevelSelector } from '@/components/game/numbers/LevelSelector';
 import { PlayCanvas } from '@/components/game/numbers/PlayCanvas';
 import { ResultsScreen } from '@/components/game/numbers/ResultsScreen';
+import { ProgressIndicator } from '@/components/game/ProgressIndicator';
 import { useSettings } from '@/contexts/SettingsContext';
 import {
   generateSession,
@@ -21,6 +22,7 @@ const AddUpSubtractGame = () => {
   const [gameState, setGameState] = useState<GameState>('menu');
   const [currentLevel, setCurrentLevel] = useState<number | null>(null);
   const [exercises, setExercises] = useState<Exercise[]>([]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const [finalScore, setFinalScore] = useState(0);
   const [earnedStars, setEarnedStars] = useState(0);
   const [startTime, setStartTime] = useState<number>(0);
@@ -29,6 +31,7 @@ const AddUpSubtractGame = () => {
     console.log('numbers_game_started', { levelId });
     setCurrentLevel(levelId);
     setExercises(generateSession(levelId));
+    setCurrentExerciseIndex(0);
     setStartTime(Date.now());
     setGameState('playing');
   };
@@ -78,13 +81,18 @@ const AddUpSubtractGame = () => {
       onReset={handleReset}
       showScore={false}
       topRightControls={
-        <button
-          onClick={() => navigate('/')}
-          className="p-4 bg-card hover:bg-card/80 rounded-full shadow-soft transition-all duration-200 active:scale-95"
-          aria-label="Back to hub"
-        >
-          <ArrowLeft size={24} />
-        </button>
+        <>
+          {gameState === 'playing' && (
+            <ProgressIndicator current={currentExerciseIndex + 1} total={exercises.length} />
+          )}
+          <button
+            onClick={() => navigate('/')}
+            className="p-4 bg-card hover:bg-card/80 rounded-full shadow-soft transition-all duration-200 active:scale-95"
+            aria-label="Back to hub"
+          >
+            <ArrowLeft size={24} />
+          </button>
+        </>
       }
     >
       {gameState === 'menu' && (
@@ -95,6 +103,7 @@ const AddUpSubtractGame = () => {
         <PlayCanvas
           exercises={exercises}
           onComplete={handleComplete}
+          onProgressChange={setCurrentExerciseIndex}
           soundEnabled={soundEnabled}
         />
       )}
