@@ -17,13 +17,17 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <SettingsProvider>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter basename="/icon-counting-game">
+const App = () => {
+  // Use basename only for production (GitHub Pages)
+  const basename = import.meta.env.PROD ? "/icon-counting-game" : "/";
+  
+  return (
+    <QueryClientProvider client={queryClient}>
+      <SettingsProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter basename={basename}>
           <Routes>
             <Route path="/" element={<Hub />} />
             <Route path="/game/compare" element={<CompareGame />} />
@@ -41,6 +45,7 @@ const App = () => (
       </TooltipProvider>
     </SettingsProvider>
   </QueryClientProvider>
-);
+  );
+};
 
 export default App;
