@@ -70,7 +70,7 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full h-full px-4 gap-8">
+    <div className="flex flex-col items-center justify-center w-full h-full px-4 gap-4 md:gap-6">
       <SuccessAnimation show={showSuccess} />
       
       {/* Progress Indicator - Centered at top */}
@@ -79,9 +79,9 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
       </div>
       
       {/* Equation Box */}
-      <div key={currentIndex} className="bg-card rounded-3xl shadow-playful p-8 sm:p-12 w-full max-w-2xl">
+      <div key={currentIndex} className="bg-card rounded-3xl shadow-playful p-6 md:p-8 lg:p-10 w-full max-w-[min(90vw,600px)]">
         <div className="text-center">
-          <div className="text-6xl sm:text-8xl font-bold text-foreground flex items-center gap-4 justify-center">
+          <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-foreground flex items-center gap-2 sm:gap-3 md:gap-4 justify-center">
             <span className="animate-in slide-in-from-left duration-500">{currentExercise.operandA}</span>
             <span className="text-primary animate-in fade-in duration-300 delay-200">{getOperationSymbol(currentExercise.operation)}</span>
             <span className="animate-in slide-in-from-right duration-500">{currentExercise.operandB}</span>
@@ -94,7 +94,7 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
       </div>
 
       {/* Answer options (2×2 grid) */}
-      <div className="grid grid-cols-2 gap-4 w-full max-w-md">
+      <div className="grid grid-cols-2 gap-3 md:gap-4 w-full max-w-[min(85vw,400px)] md:max-w-[min(70vw,450px)]">
         {currentExercise.options.map((option, index) => {
           const isSelected = selectedAnswer === option;
           const isCorrectAnswer = option === currentExercise.correctAnswer;
@@ -106,8 +106,8 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
               onClick={() => handleAnswer(option)}
               disabled={selectedAnswer !== null}
               className={`
-                aspect-square rounded-2xl text-5xl font-bold
-                transition-all duration-200 shadow-lg
+                aspect-square rounded-2xl text-3xl sm:text-4xl md:text-5xl font-bold
+                transition-all duration-200 shadow-lg min-h-[80px] md:min-h-[100px]
                 ${
                   showWrong
                     ? 'bg-destructive text-destructive-foreground animate-pulse'
@@ -122,11 +122,14 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
         })}
       </div>
 
-      {isWrong && (
-        <div className="text-xl font-semibold text-destructive animate-in fade-in text-center">
-          Wrong answer
-        </div>
-      )}
+      {/* Fixed height container to prevent jumping */}
+      <div className="h-8 flex items-center justify-center">
+        {isWrong && (
+          <div className="text-lg md:text-xl font-semibold text-destructive animate-in fade-in text-center">
+            Wrong answer
+          </div>
+        )}
+      </div>
     </div>
   );
 };
