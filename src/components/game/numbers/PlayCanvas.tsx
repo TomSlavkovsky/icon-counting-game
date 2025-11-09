@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Exercise, getOperationSymbol } from './numbersUtils';
 import { SuccessAnimation } from '../SuccessAnimation';
 import { ProgressIndicator } from '../ProgressIndicator';
+import { playSound } from '@/lib/sounds';
 
 interface PlayCanvasProps {
   exercises: Exercise[];
@@ -36,20 +37,7 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
       setScore(score + 1);
       setShowSuccess(true);
       
-      // Play success sound
-      if (soundEnabled) {
-        const audioContext = new AudioContext();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        oscillator.frequency.value = 523;
-        oscillator.type = 'sine';
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.2);
-      }
+      playSound('ok', !soundEnabled);
 
       setTimeout(() => {
         setShowSuccess(false);
@@ -65,20 +53,7 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
     } else {
       setIsWrong(true);
       
-      // Play error sound
-      if (soundEnabled) {
-        const audioContext = new AudioContext();
-        const oscillator = audioContext.createOscillator();
-        const gainNode = audioContext.createGain();
-        oscillator.connect(gainNode);
-        gainNode.connect(audioContext.destination);
-        oscillator.frequency.value = 200;
-        oscillator.type = 'sawtooth';
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
-        oscillator.start(audioContext.currentTime);
-        oscillator.stop(audioContext.currentTime + 0.3);
-      }
+      playSound('error', !soundEnabled);
 
       setTimeout(() => {
         setIsWrong(false);
@@ -95,16 +70,16 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
   };
 
   return (
-    <div className="flex flex-col items-center justify-center w-full max-w-2xl mx-auto px-4 gap-8">
+    <div className="flex flex-col items-center justify-center w-full h-full px-4 gap-8">
       <SuccessAnimation show={showSuccess} />
       
-      {/* Progress Indicator */}
-      <div className="w-full flex justify-center">
+      {/* Progress Indicator - Centered at top */}
+      <div className="absolute top-8 left-1/2 -translate-x-1/2">
         <ProgressIndicator current={externalIndex + 1} total={exercises.length} />
       </div>
       
       {/* Equation Box */}
-      <div key={currentIndex} className="bg-card rounded-3xl shadow-playful p-8 sm:p-12 w-full">
+      <div key={currentIndex} className="bg-card rounded-3xl shadow-playful p-8 sm:p-12 w-full max-w-2xl">
         <div className="text-center">
           <div className="text-6xl sm:text-8xl font-bold text-foreground flex items-center gap-4 justify-center">
             <span className="animate-in slide-in-from-left duration-500">{currentExercise.operandA}</span>
@@ -117,7 +92,7 @@ export const PlayCanvas = ({ exercises, onComplete, onProgressChange, soundEnabl
       </div>
 
       {/* Answer options (2×2 grid) */}
-      <div className="grid grid-cols-2 gap-4 w-full max-w-md mx-auto">
+      <div className="grid grid-cols-2 gap-4 w-full max-w-md">
         {currentExercise.options.map((option, index) => {
           const isSelected = selectedAnswer === option;
           const isCorrectAnswer = option === currentExercise.correctAnswer;
