@@ -60,6 +60,14 @@ export const GameBoard = ({
                 height: cellSize
               }}
               onClick={() => onCellClick?.({ row: r, col: c })}
+              onDragOver={(e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                onCellClick?.({ row: r, col: c });
+              }}
             />
           );
         })

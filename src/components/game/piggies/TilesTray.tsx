@@ -7,6 +7,8 @@ interface TilesTrayProps {
   selectedTileId: string | null;
   onTileSelect: (tileId: string) => void;
   onTileRotate: (tileId: string) => void;
+  onDragStart: (tileId: string) => void;
+  onDragEnd: () => void;
   cellSize: number;
 }
 
@@ -16,6 +18,8 @@ export const TilesTray = ({
   selectedTileId,
   onTileSelect,
   onTileRotate,
+  onDragStart,
+  onDragEnd,
   cellSize
 }: TilesTrayProps) => {
   return (
@@ -58,6 +62,11 @@ export const TilesTray = ({
                 isSelected={selectedTileId === tileMask.id}
                 onRotate={() => onTileRotate(tileMask.id)}
                 onSelect={() => onTileSelect(tileMask.id)}
+                onDragStart={(e) => {
+                  e.dataTransfer.effectAllowed = 'move';
+                  onDragStart(tileMask.id);
+                }}
+                onDragEnd={onDragEnd}
               />
             </div>
           );
