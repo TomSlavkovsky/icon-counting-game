@@ -11,6 +11,7 @@ import SkrtniGame from "./pages/SkrtniGame";
 import AdditionGame from "./pages/AdditionGame";
 import TicTacToe from "./pages/TicTacToe";
 import SudokuGame from "./pages/SudokuGame";
+import PiggiesHousesGame from "./pages/PiggiesHousesGame";
 import StoneMatchGame from "./pages/StoneMatchGame";
 import AddUpSubtractGame from "./pages/AddUpSubtractGame";
 import NotFound from "./pages/NotFound";
@@ -38,6 +39,7 @@ const App = () => {
             <Route path="/game/sudoku" element={<SudokuGame />} />
             <Route path="/game/stonematch" element={<StoneMatchGame />} />
             <Route path="/game/addupsubtract" element={<AddUpSubtractGame />} />
+            <Route path="/game/piggieshouses" element={<PiggiesHousesGame />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

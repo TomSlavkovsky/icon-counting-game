@@ -91,6 +91,16 @@ const playGames = [
     path: '/game/sudoku',
     enabled: true,
   },
+  {
+    id: 'piggieshouses',
+    title: 'Prasátka a Domečky',
+    subtitle: 'Piggies & Houses',
+    description: 'Place house tiles so pigs are in windows and wolf stays out',
+    color: 'bg-pink-500',
+    textColor: 'text-pink-500',
+    path: '/game/piggieshouses',
+    enabled: true,
+  },
 ];
 
 const Hub = () => {
