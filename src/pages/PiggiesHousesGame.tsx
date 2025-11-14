@@ -18,6 +18,7 @@ export default function PiggiesHousesGame() {
   const [selectedTileId, setSelectedTileId] = useState<string | null>(null);
   const [placedTiles, setPlacedTiles] = useState<PlacedTile[]>([]);
   const [showHint, setShowHint] = useState(false);
+  const [draggedTileId, setDraggedTileId] = useState<string | null>(null);
 
   const level = LEVELS[currentLevel];
   const cellSize = 60;
@@ -55,9 +56,10 @@ export default function PiggiesHousesGame() {
   };
 
   const handleCellClick = (position: { row: number; col: number }) => {
-    if (!selectedTileId) return;
+    const tileId = selectedTileId || draggedTileId;
+    if (!tileId) return;
 
-    const selectedTile = placedTiles.find(t => t.id === selectedTileId);
+    const selectedTile = placedTiles.find(t => t.id === tileId);
     if (!selectedTile) return;
 
     // Try to place tile at this position
@@ -66,7 +68,7 @@ export default function PiggiesHousesGame() {
       position
     };
 
-    const otherTiles = placedTiles.filter(t => t.id !== selectedTileId && t.position.row !== -1);
+    const otherTiles = placedTiles.filter(t => t.id !== tileId && t.position.row !== -1);
     const validation = canPlaceTile(
       newTile,
       level.board.mask,
@@ -76,13 +78,14 @@ export default function PiggiesHousesGame() {
     );
 
     if (validation.valid) {
-      setPlacedTiles(prev => prev.map(t => t.id === selectedTileId ? newTile : t));
+      setPlacedTiles(prev => prev.map(t => t.id === tileId ? newTile : t));
       setSelectedTileId(null);
+      setDraggedTileId(null);
       playSound('drop', !soundEnabled);
 
       // Check win condition
       setTimeout(() => {
-        const updatedTiles = placedTiles.map(t => t.id === selectedTileId ? newTile : t);
+        const updatedTiles = placedTiles.map(t => t.id === tileId ? newTile : t);
         if (checkWinCondition(updatedTiles, level.pieces.animals.pigs, level.pieces.animals.wolf)) {
           setShowSuccess(true);
           setScore(prev => prev + 1);
@@ -92,7 +95,17 @@ export default function PiggiesHousesGame() {
       }, 100);
     } else {
       playSound('error', !soundEnabled);
+      setDraggedTileId(null);
     }
+  };
+
+  const handleDragStart = (tileId: string) => {
+    setDraggedTileId(tileId);
+    playSound('pick', !soundEnabled);
+  };
+
+  const handleDragEnd = () => {
+    setDraggedTileId(null);
   };
 
   const handleReset = () => {
@@ -176,6 +189,8 @@ export default function PiggiesHousesGame() {
           selectedTileId={selectedTileId}
           onTileSelect={handleTileSelect}
           onTileRotate={handleTileRotate}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
           cellSize={cellSize * 0.7}
         />
       </div>

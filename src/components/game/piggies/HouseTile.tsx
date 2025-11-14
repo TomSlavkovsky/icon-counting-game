@@ -9,6 +9,8 @@ interface HouseTileProps {
   onRotate: () => void;
   onSelect: () => void;
   isDraggable?: boolean;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragEnd?: (e: React.DragEvent) => void;
 }
 
 export const HouseTile = ({
@@ -17,7 +19,9 @@ export const HouseTile = ({
   isSelected,
   onRotate,
   onSelect,
-  isDraggable = true
+  isDraggable = true,
+  onDragStart,
+  onDragEnd
 }: HouseTileProps) => {
   const rotatedMask = rotateTileMask(tile.mask, tile.rotation);
   const rows = rotatedMask.length;
@@ -29,6 +33,9 @@ export const HouseTile = ({
         isDraggable ? 'cursor-move' : ''
       } ${isSelected ? 'ring-4 ring-primary' : ''}`}
       onClick={onSelect}
+      draggable={isDraggable}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
       style={{
         width: cols * cellSize,
         height: rows * cellSize
